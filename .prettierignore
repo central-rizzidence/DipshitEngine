@@ -1,0 +1,8 @@
+# Ignore artifacts
+export
+
+# Ignore dependency information
+hmm.json
+
+# Ignore adobe animate's texture atlases
+*/Animation.json
