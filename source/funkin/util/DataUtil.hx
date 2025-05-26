@@ -6,7 +6,7 @@ import flixel.util.FlxColor;
 
 using hxjsonast.Tools;
 
-class DataUtil {
+final class DataUtil {
 	public static function parseJsonColor(json:Json, name:String):FlxColor {
 		switch json.value {
 			case JString(s):
@@ -23,7 +23,7 @@ class DataUtil {
 		}
 	}
 
-	public static function writeJsonColor(color:FlxColor):String {
+	public static inline function writeJsonColor(color:FlxColor):String {
 		return '"${color.toWebString()}"';
 	}
 

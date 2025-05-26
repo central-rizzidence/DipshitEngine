@@ -1,5 +1,6 @@
 package funkin.storymenu;
 
+import funkin.util.Paths;
 import funkin.input.Controls;
 import funkin.storymenu.preview.LevelPreview;
 import flixel.group.FlxContainer.FlxTypedContainer;
@@ -11,6 +12,8 @@ class StoryMenuState extends FlxTransitionableState {
 	private var _items:TypedMenuList<StoryMenuItem>;
 
 	private var _preview:LevelPreview;
+
+	private var _confirmTimer:Float = 0;
 
 	override function create() {
 		persistentUpdate = true;
@@ -39,6 +42,7 @@ class StoryMenuState extends FlxTransitionableState {
 
 		if (Controls.instance.justPressed.BACK) {
 			_items.enabled = false;
+			FlxG.sound.play(Paths.sound('menu/cancel'), 0.7);
 			FlxG.switchState(() -> new funkin.mainmenu.MainMenuState());
 		}
 	}

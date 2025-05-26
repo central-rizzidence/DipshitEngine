@@ -2,7 +2,7 @@ package funkin.external;
 
 import haxe.io.Path;
 
-@:keep class ALSoftConfig {
+@:keep final class ALSoftConfig {
 	private static function __init__() {
 		#if sys
 		var filePath = Path.join([Sys.getCwd(), 'alsoftrc.ini']);

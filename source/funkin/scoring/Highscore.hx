@@ -14,7 +14,7 @@ typedef DifficultyScores = Map<String, Highscore>;
 typedef VariationScores = Map<String, DifficultyScores>;
 typedef SongOrWeekScores = Map<String, VariationScores>;
 
-class Highscore {
+final class Highscore {
 	private static var _songScores:SongOrWeekScores = [];
 	private static var _weekScores:SongOrWeekScores = [];
 

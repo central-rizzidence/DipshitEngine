@@ -16,6 +16,9 @@ class MusicPlayback implements IFlxDestroyable {
 	public var shouldLoop:Bool = false;
 	public var loopTime:Float = 0;
 
+	public var volume(default, set):Float = 1;
+	public var rate(default, set):Float = 1;
+
 	public var started(default, null):FlxSignal;
 	public var paused(default, null):FlxSignal;
 	public var resumed(default, null):FlxSignal;
@@ -34,8 +37,13 @@ class MusicPlayback implements IFlxDestroyable {
 	public function new(id:String, ?metadata:MusicMetadata, ?arrange:MusicArrange, directory:String = 'music') {
 		if (metadata == null)
 			metadata = MusicMetadata.get(id, directory);
+
 		if (arrange == null)
 			arrange = MusicArrange.get(id, directory);
+		if (arrange == null) {
+			arrange = new MusicArrange();
+			arrange.tracks.push(new MusicTrack(id));
+		}
 
 		conductor = new Conductor(metadata.timeChanges);
 		shouldLoop = arrange.shouldLoop;
@@ -48,9 +56,10 @@ class MusicPlayback implements IFlxDestroyable {
 		looped = new FlxSignal();
 
 		_tracks = [];
-		for (track in arrange.tracks) {
+
+		for (track in arrange?.tracks) {
 			final path = Paths.file('$id/${Paths.cutLibrary(track.asset)}', 'music', Paths.SOUND_EXTENSION);
-			final sound = FlxG.sound.load(path);
+			final sound = FlxG.sound.load(path, FlxG.sound.defaultMusicGroup);
 			sound.persist = true;
 
 			_tracks.push({
@@ -74,6 +83,8 @@ class MusicPlayback implements IFlxDestroyable {
 		looped?.destroy();
 		started = paused = resumed = completed = looped = null;
 
+		for (track in _tracks)
+			track.sound.destroy();
 		_tracks = [];
 
 		FlxG.signals.preUpdate.remove(_update);
@@ -194,7 +205,7 @@ class MusicPlayback implements IFlxDestroyable {
 	}
 
 	private function _startTrack(track:MusicTrackContainer) {
-		track.sound.volume = track.data.volume;
+		track.sound.volume = track.data.volume * volume;
 		track.sound.onComplete = () -> _onTrackComplete(track);
 		track.sound.play(track.data.startTime, track.data.endTime ?? track.sound.length);
 		track.started = true;
@@ -208,12 +219,40 @@ class MusicPlayback implements IFlxDestroyable {
 			return;
 
 		if (shouldLoop) {
-			setTime(0);
-			looped.dispatch();
+			_loop();
 		} else {
 			isCompleted = true;
 			completed.dispatch();
 		}
+	}
+
+	private function _loop() {
+		isCompleted = false;
+		for (track in _tracks) {
+			track.sound.stop();
+			track.started = false;
+			track.completed = false;
+		}
+		_manualTime = 0;
+
+		_startReachedTracks(0);
+		looped.dispatch();
+	}
+
+	@:noCompletion
+	private function set_volume(value:Float):Float {
+		for (track in _tracks)
+			track.sound.volume = track.data.volume * value;
+
+		return volume = value;
+	}
+
+	@:noCompletion
+	private function set_rate(value:Float):Float {
+		for (track in _tracks)
+			track.sound.pitch = value;
+
+		return rate = value;
 	}
 
 	@:noCompletion

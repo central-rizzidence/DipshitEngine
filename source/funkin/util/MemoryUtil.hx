@@ -10,19 +10,14 @@ import java.vm.Gc;
 import neko.vm.Gc;
 #end
 
-class MemoryUtil {
+final class MemoryUtil {
 	public static function clearAll() {
-		#if openfl
 		clearOpenFLCache();
-		#end
-		#if flixel
 		flixel.FlxG.bitmap.clearCache();
 		destroyFlixelZombies();
-		#end
 		runGc();
 	}
 
-	#if openfl
 	public static function clearOpenFLCache() {
 		final cache = Std.downcast(openfl.Assets.cache, openfl.utils.AssetCache);
 		if (cache == null)
@@ -37,22 +32,18 @@ class MemoryUtil {
 		for (id in cache.sound.keys())
 			cache.removeSound(id);
 	}
-	#end
 
-	#if flixel
 	public static function destroyFlixelZombies() {
 		#if cpp
 		var zombie:Null<Dynamic>;
-		do {
-			zombie = Gc.getNextZombie();
+		while ((zombie = Gc.getNextZombie()) != null) {
 			if (zombie is flixel.util.FlxDestroyUtil.IFlxDestroyable)
 				flixel.util.FlxDestroyUtil.destroy(zombie);
-		} while (zombie != null);
+		}
 		#end
 	}
-	#end
 
-	public static function runGc() {
+	public static inline function runGc() {
 		#if (cpp || java || neko)
 		Gc.run(true);
 		#elseif hl

@@ -4,8 +4,8 @@ import json2object.Error;
 import haxe.PosInfos;
 import json2object.Position;
 
-class JsonUtil {
-	public static function convertPosition(position:Position):PosInfos {
+final class JsonUtil {
+	public static inline function convertPosition(position:Position):PosInfos {
 		return {
 			fileName: position.file,
 			lineNumber: position.lines[0].number,
@@ -14,7 +14,7 @@ class JsonUtil {
 		}
 	}
 
-	public static function stringifyError(error:Error):String {
+	public static inline function stringifyError(error:Error):String {
 		return switch error {
 			case IncorrectType(variable, expected, pos):
 				'Variable "$variable" should be of type $expected';
@@ -33,7 +33,7 @@ class JsonUtil {
 		}
 	}
 
-	public static function logError(error:Error) {
+	public static inline function logError(error:Error) {
 		final position = switch error {
 			case IncorrectType(_, _, pos) | IncorrectEnumValue(_, _, pos) | InvalidEnumConstructor(_, _, pos) | UninitializedVariable(_, pos) |
 				UnknownVariable(_, pos) | ParserError(_, pos) | CustomFunctionException(_, pos): pos;

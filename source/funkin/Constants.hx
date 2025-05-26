@@ -2,7 +2,7 @@ package funkin;
 
 import thx.semver.Version;
 
-class Constants {
+final class Constants {
 	public static final ENGINE_VERSION:Version = CompileTime.readFile('gitVersion.txt') ?? '0.0.0';
 
 	public static inline var DEFAULT_FONT:String = 'VCR OSD Mono RUS+VHS icons';

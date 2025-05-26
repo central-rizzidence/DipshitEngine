@@ -2,7 +2,7 @@ package funkin.config;
 
 import flixel.FlxSprite;
 
-class Config {
+final class Config {
 	/** Whether jagged lines should be smoothed **/
 	public static var antialiasing(get, set):Bool;
 

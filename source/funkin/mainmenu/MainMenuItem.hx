@@ -35,6 +35,5 @@ class MainMenuItem extends FunkinSprite implements IMenuItem {
 	private function _select() {
 		playAnimation('selected');
 		centerOffsets();
-		screenCenter(X);
 	}
 }

@@ -1,6 +1,5 @@
 package funkin.title;
 
-import funkin.util.MemoryUtil;
 import funkin.input.Controls;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
@@ -16,6 +15,7 @@ import flixel.addons.transition.FlxTransitionableState;
 
 class TitleState extends FlxTransitionableState {
 	public static inline var MENU_MUSIC:String = 'klaskiiLoop';
+	public static inline var MENU_MUSIC_VOLUME:Float = 0.6;
 
 	public static inline var LOGO_BUMP_WIDTH:Float = 718;
 
@@ -43,12 +43,14 @@ class TitleState extends FlxTransitionableState {
 	private var _backgroundVideoLoaded:Bool = false;
 
 	override function create() {
+		FlxTransitionableState.skipNextTransIn = true;
 		persistentUpdate = true;
 		super.create();
 
 		MusicPlayback.current = FlxDestroyUtil.destroy(MusicPlayback.current);
 		MusicPlayback.current = new MusicPlayback(MENU_MUSIC);
-		MusicPlayback.current.looped.add(() -> FlxG.log.notice('Playback looped!'));
+		MusicPlayback.current.volume = MENU_MUSIC_VOLUME;
+		MusicPlayback.current.looped.add(() -> FlxG.log.notice('Playback should be looped!'));
 
 		FlxG.assets.getSound(Paths.sound('menu/confirm'));
 
@@ -86,6 +88,7 @@ class TitleState extends FlxTransitionableState {
 			_introVideo.screenCenter();
 		});
 		_introVideo.bitmap.onEndReached.add(skipIntro);
+		_introVideo.bitmap.volumeAdjust = MENU_MUSIC_VOLUME;
 		add(_introVideo);
 
 		_introVideoLoaded = _introVideo.load(Paths.video('klaskiiTitle'));
@@ -108,7 +111,10 @@ class TitleState extends FlxTransitionableState {
 			_backgroundVideo.updateHitbox();
 			_backgroundVideo.screenCenter();
 		});
-		_backgroundVideo.bitmap.onEndReached.add(_backgroundVideo.destroy);
+		_backgroundVideo.bitmap.onEndReached.add(() -> {
+			// FlxTween.cancelTweensOf(_backgroundVideo);
+			_backgroundVideo = FlxDestroyUtil.destroy(_backgroundVideo);
+		});
 		add(_backgroundVideo);
 
 		_backgroundVideoLoaded = _backgroundVideo.load(Paths.video('titleKickBG'));
@@ -153,6 +159,7 @@ class TitleState extends FlxTransitionableState {
 				FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
 
 				new FlxTimer().start(1, _ -> {
+					// _startExitState(() -> new funkin.mainmenu.MainMenuState());
 					FlxG.switchState(() -> new funkin.mainmenu.MainMenuState());
 					justStarted = false;
 				});
@@ -172,7 +179,7 @@ class TitleState extends FlxTransitionableState {
 
 			_logoTimer += elapsed;
 
-			final frame = Math.floor(14 * _logoTimer / 0.625);
+			final frame = Math.floor(14 * _logoTimer * 1.6); // не спрашивайте что за 1.6, я не помню, но это что то с фпс
 			_logoBump.setGraphicSize( switch frame {
 				case 0: 683;
 				case 1 | 2: 718;
@@ -189,7 +196,7 @@ class TitleState extends FlxTransitionableState {
 			return;
 
 		#if hxvlc
-		_introVideo.destroy();
+		_introVideo = FlxDestroyUtil.destroy(_introVideo);
 		#end
 
 		MusicPlayback.current.start();
@@ -218,4 +225,14 @@ class TitleState extends FlxTransitionableState {
 		if (_gfDance.playDance(beat))
 			_logoTimer = 0;
 	}
+	/*private function _startExitState(nextState:NextState) {
+		if (_backgroundVideo != null)
+			FlxTween.tween(_backgroundVideo, {alpha: 0}, 1);
+
+		FlxTween.tween(_logoBump, {y: _logoBump.y + FlxG.height}, 1, {ease: FlxEase.expoIn});
+		FlxTween.tween(_gfDance, {x: _gfDance.x + FlxG.width}, 1, {ease: FlxEase.backIn});
+
+		FlxTransitionableState.skipNextTransOut = true;
+		FlxTimer.wait(2, () -> FlxG.switchState(() -> new funkin.mainmenu.MainMenuState()));
+	}*/
 }

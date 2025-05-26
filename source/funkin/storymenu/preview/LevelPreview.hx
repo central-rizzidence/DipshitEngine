@@ -5,7 +5,6 @@ import flixel.text.FlxText;
 import flixel.group.FlxContainer;
 
 class LevelPreview extends FlxContainer {
-	private var _header:FunkinSprite;
 	private var _scoreText:FlxText;
 	private var _titleText:FlxText;
 
@@ -14,14 +13,16 @@ class LevelPreview extends FlxContainer {
 	private var _props:Array<LevelPreviewProp> = [];
 	private var _bopperProps:Array<LevelPreviewBopperProp> = [];
 
+	private var _tracklistText:FlxText;
+
 	public function new() {
 		super();
 
-		_header = new FunkinSprite();
-		_header.makeGraphic(1, 1, 0xff000000);
-		_header.setGraphicSize(FlxG.width, 56);
-		_header.updateHitbox();
-		add(_header);
+		final header = new FunkinSprite();
+		header.makeGraphic(1, 1, 0xff000000);
+		header.setGraphicSize(FlxG.width, 56);
+		header.updateHitbox();
+		add(header);
 
 		_scoreText = new FlxText(10, 10, 'LEVEL SCORE: 42069420');
 		_scoreText.setFormat(Constants.DEFAULT_FONT, 32);
@@ -32,11 +33,15 @@ class LevelPreview extends FlxContainer {
 		_titleText.alpha = 0.7;
 		add(_titleText);
 
-		_background = new FunkinSprite(0, 56);
+		_background = new FunkinSprite(0, header.y + header.height);
 		_background.makeGraphic(1, 1);
 		_background.setGraphicSize(FlxG.width, 400);
 		_background.updateHitbox();
 		add(_background);
+
+		_tracklistText = new FlxText(FlxG.width * 0.05, _background.y + _background.height + 44, 0, 'Tracks', 32);
+		_tracklistText.setFormat(Constants.DEFAULT_FONT, 32, 0xffe55777, CENTER);
+		add(_tracklistText);
 	}
 
 	public function setLevel(level:Level, id:String, difficulty:String, variation:String = Constants.DEFAULT_VARIATION) {
@@ -70,6 +75,11 @@ class LevelPreview extends FlxContainer {
 					add(_props[addedProps++].setData(prop));
 			}
 		}
+
+		_tracklistText.text = 'TRACKS\n\n';
+		_tracklistText.text += level.songs.join('\n');
+		_tracklistText.screenCenter(X);
+		_tracklistText.x -= FlxG.width * 0.35;
 	}
 
 	public function playPropsDance(beat:Int) {

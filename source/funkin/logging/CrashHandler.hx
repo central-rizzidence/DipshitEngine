@@ -1,5 +1,5 @@
 package funkin.logging;
 
-class CrashHandler {
+final class CrashHandler {
 	public static function setupCallbacks() {}
 }

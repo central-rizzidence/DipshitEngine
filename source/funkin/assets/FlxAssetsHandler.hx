@@ -6,7 +6,7 @@ import openfl.display.BitmapData;
 
 typedef GetAssetFunction = (id:String, type:FlxAssetType, ?useCache:Bool) -> Any;
 
-class FlxAssetsHandler {
+final class FlxAssetsHandler {
 	public static function replaceFunctions() {
 		final defaultMethod = FlxG.assets.getAssetUnsafe;
 

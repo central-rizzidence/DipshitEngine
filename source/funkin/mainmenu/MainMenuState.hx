@@ -113,6 +113,7 @@ class MainMenuState extends FlxTransitionableState {
 
 		if (Controls.instance.justPressed.BACK) {
 			_items.enabled = false;
+			FlxG.sound.play(Paths.sound('menu/cancel'));
 			FlxG.switchState(() -> new funkin.title.TitleState());
 		}
 	}

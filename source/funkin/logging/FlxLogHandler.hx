@@ -4,8 +4,8 @@ import flixel.util.FlxColor;
 import haxe.PosInfos;
 import flixel.system.debug.log.LogStyle;
 
-class FlxLogHandler {
-	public static function setupRetranslation() {
+final class FlxLogHandler {
+	public static inline function setupRetranslation() {
 		for (style in [
 			LogStyle.NORMAL,
 			LogStyle.WARNING,

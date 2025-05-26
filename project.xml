@@ -82,6 +82,8 @@
 	<!-- Video playback -->
 	<haxelib name="hxvlc" if="cpp"/>
 
+	<haxelib name="actuate"/>
+
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
 	<setenv name="HAXEPATH" value="./"/>
@@ -102,6 +104,7 @@
 		<haxedef name="no-traces"/>
 	</section>
 
+	<haxedef name="FLX_NO_DEBUG"/>
 
 	<haxedef name="FLX_DEFAULT_SOUND_EXT" value="ogg"/>
 	<haxedef name="FLX_DEFAULT_SOUND_EXT" value="mp3" if="web"/>
@@ -113,5 +116,7 @@
 	<!-- Place custom nodes like icons here (higher priority to override the HaxeFlixel icon) -->
 	<icon path="art/icons/iconOG.png"/>
 	<icon path="art/icons/icon16.png" size="16"/>
+
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.sound.HxVlcVolumeMacro.rebuildVolumeChangeMethod())', 'hxvlc.flixel.FlxInternalVideo')"/>
 
 </project>

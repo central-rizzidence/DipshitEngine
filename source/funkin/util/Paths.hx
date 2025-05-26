@@ -5,7 +5,7 @@ import flixel.util.FlxSave;
 import flixel.FlxG;
 import haxe.io.Path;
 
-class Paths {
+final class Paths {
 	public static final SOUND_EXTENSION:String = Compiler.getDefine('FLX_DEFAULT_SOUND_EXT');
 	public static inline var VIDEO_EXTENSION:String = 'mp4';
 

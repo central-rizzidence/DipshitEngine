@@ -1,6 +1,5 @@
 package funkin.storymenu;
 
-import funkin.storymenu.preview.LevelPreviewData;
 import flixel.math.FlxMath;
 import funkin.util.Paths;
 import funkin.util.MenuList.IMenuItem;

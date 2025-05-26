@@ -4,14 +4,16 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
-class Bindings {
+final class Bindings {
 	public static var keyboard:Map<Action, Array<FlxKey>> = [
 		UI_UP => [FlxKey.W, FlxKey.UP],
 		UI_DOWN => [FlxKey.S, FlxKey.DOWN],
 		UI_LEFT => [FlxKey.A, FlxKey.LEFT],
 		UI_RIGHT => [FlxKey.D, FlxKey.RIGHT],
 		BACK => [FlxKey.ESCAPE, FlxKey.BACKSPACE],
-		ACCEPT => [FlxKey.SPACE, FlxKey.ENTER]
+		ACCEPT => [FlxKey.SPACE, FlxKey.ENTER],
+		RELOAD_ASSETS => [FlxKey.F5],
+		TOGGLE_DEBUGGER => [FlxKey.F2]
 	];
 
 	public static var gamepad:Map<Action, Array<FlxGamepadInputID>> = buildNullGamepadBindings();

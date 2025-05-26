@@ -1,11 +1,10 @@
 package funkin.input;
 
 import flixel.math.FlxMath;
-import flixel.input.gamepad.FlxGamepad;
 import flixel.addons.input.FlxControlInputType;
 import flixel.addons.input.FlxControls;
 
-class Controls extends FlxControls<Action> {
+final class Controls extends FlxControls<Action> {
 	public static var instance:Controls;
 
 	public function getDefaultMappings():ActionMap<Action> {

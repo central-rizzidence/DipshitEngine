@@ -5,6 +5,10 @@ enum Action {
 	UI_DOWN;
 	UI_LEFT;
 	UI_RIGHT;
+
 	BACK;
 	ACCEPT;
+
+	RELOAD_ASSETS;
+	TOGGLE_DEBUGGER;
 }

@@ -34,7 +34,7 @@ class MusicTrack {
 	@:alias('e') @:optional public var endTime:Null<Float>;
 	@:alias('a') public var asset:String;
 
-	public function new(asset:String, volume:Float, playTime:Float) {
+	public function new(asset:String, volume:Float = 1, playTime:Float = 0) {
 		this.asset = asset;
 		this.volume = volume;
 		this.playTime = playTime;
