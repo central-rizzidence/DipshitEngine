@@ -7,6 +7,8 @@ import flxanimate.FlxAnimate;
 class FunkinSprite extends FlxAnimate {
 	public var autoUpdateOffsets:Bool = false;
 
+	public var animationChain:Map<String, String> = [];
+
 	@:allow(funkin.animation.OffsetAnimationData)
 	private var _animationOffsets:Map<String, FlxPoint> = [];
 
@@ -61,15 +63,27 @@ class FunkinSprite extends FlxAnimate {
 		return useAtlas ? anim.curAnimName : animation.name;
 	}
 
+	public function isAnimationCompleted():Bool {
+		return useAtlas ? anim.finished : animation.finished;
+	}
+
 	override function update(elapsed:Float) {
 		if (autoUpdateOffsets) {
-			final animationName = useAtlas ? anim.curAnimName : animation.name;
+			final animationName = getCurrentAnimation();
 			if (_lastOffsettedAnimation != animationName) {
 				updateOffsets();
 				_lastOffsettedAnimation = animationName;
 			}
 		}
 
+		// TODO: оно не работает
+		if (isAnimationCompleted()) {
+			final animationName = getCurrentAnimation();
+			if (animationName != null && animationChain.exists(animationName)) {
+				if (hasAnimation(animationChain[animationName]))
+					playAnimation(animationChain[animationName]);
+			}
+		}
 		super.update(elapsed);
 	}
 

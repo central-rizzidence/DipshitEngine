@@ -57,4 +57,12 @@ final class Paths {
 	public static inline function video(id:String):String {
 		return file(id, 'videos', VIDEO_EXTENSION);
 	}
+
+	public static inline function asDirectory(string:String):String {
+		return string.fastCodeAt(string.length - 1) == '/'.code ? string : '$string/';
+	}
+
+	public static inline function asExtension(string:String):String {
+		return string.fastCodeAt(0) == '.'.code ? string : '.$string';
+	}
 }

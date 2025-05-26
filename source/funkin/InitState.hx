@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.storymenu.Level.LevelRegistry;
 import funkin.sound.FlxSoundHandler;
 import funkin.util.Paths;
 import funkin.logging.FlxLogHandler;
@@ -30,6 +31,8 @@ final class InitState extends FlxState {
 		_initControls();
 
 		FlxG.plugins.addIfUniqueType(new ReloadAssetsPlugin());
+
+		LevelRegistry.instance.reloadEntries();
 
 		FlxG.switchState(() -> new funkin.title.TitleState());
 	}

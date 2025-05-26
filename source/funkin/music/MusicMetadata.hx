@@ -1,7 +1,6 @@
 package funkin.music;
 
 import funkin.util.JsonUtil;
-import json2object.ErrorUtils;
 import funkin.util.Paths;
 import json2object.JsonParser;
 

@@ -5,7 +5,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.effects.FlxFlicker;
-import funkin.util.MemoryUtil;
 import flixel.math.FlxPoint;
 import flixel.FlxObject;
 import flixel.util.typeLimit.NextState;
@@ -14,10 +13,11 @@ import funkin.util.Paths;
 import flixel.addons.transition.FlxTransitionableState;
 
 class MainMenuState extends FlxTransitionableState {
-	private var _magenta:FunkinSprite;
-	private var _items:TypedMenuList<MainMenuItem>;
+	public var magenta:FunkinSprite;
+	public var items:TypedMenuList<MainMenuItem>;
 
-	private var _camFollow:FlxObject;
+	public var camFollow:FlxObject;
+
 	private var _camFollowPoint:FlxPoint = FlxPoint.get();
 
 	override function create() {
@@ -33,30 +33,30 @@ class MainMenuState extends FlxTransitionableState {
 		bg.active = false;
 		add(bg);
 
-		_magenta = new FunkinSprite(bg.x, bg.y);
-		_magenta.loadGraphic(Paths.image('menuDesat'));
-		_magenta.scrollFactor.copyFrom(bg.scrollFactor);
-		_magenta.scale.copyFrom(bg.scale);
-		_magenta.updateHitbox();
-		_magenta.visible = false;
-		_magenta.color = 0xfffd719b;
-		_magenta.active;
-		add(_magenta);
+		magenta = new FunkinSprite(bg.x, bg.y);
+		magenta.loadGraphic(Paths.image('menuDesat'));
+		magenta.scrollFactor.copyFrom(bg.scrollFactor);
+		magenta.scale.copyFrom(bg.scale);
+		magenta.updateHitbox();
+		magenta.visible = false;
+		magenta.color = 0xfffd719b;
+		magenta.active;
+		add(magenta);
 
-		_items = new TypedMenuList(BOTH);
-		_items.selectionChanged.add(_onSelectionChanged);
-		add(_items);
+		items = new TypedMenuList(BOTH);
+		items.selectionChanged.add(_onSelectionChanged);
+		add(items);
 
 		_createMenuItem('storymode', () -> _startExitState(() -> new funkin.storymenu.StoryMenuState()));
 		_createMenuItem('freeplay', () -> _startExitState(null));
 		_createMenuItem('options', () -> _startExitState(null));
 		_createMenuItem('credits', () -> _startExitState(null));
 
-		bg.scrollFactor.y = _magenta.scrollFactor.y = Math.max(0.25 - (0.05 * (_items.length - 4)), 0.1);
+		bg.scrollFactor.y = magenta.scrollFactor.y = Math.max(0.25 - (0.05 * (items.length - 4)), 0.1);
 
-		_items.forEach(item -> {
-			item.y += 108 - (Math.max(_items.length, 4) - 4) * 80;
-			item.scrollFactor.set(0, _items.length < 6 ? 0 : (_items.length - 4) * 0.135);
+		items.forEach(item -> {
+			item.y += 108 - (Math.max(items.length, 4) - 4) * 80;
+			item.scrollFactor.set(0, items.length < 6 ? 0 : (items.length - 4) * 0.135);
 		});
 
 		final textSize = 16;
@@ -66,11 +66,11 @@ class MainMenuState extends FlxTransitionableState {
 		versionText.scrollFactor.set();
 		add(versionText);
 
-		_camFollow = new FlxObject(FlxG.width / 2, FlxG.height / 2);
-		FlxG.camera.follow(_camFollow, null, 0.06);
+		camFollow = new FlxObject(FlxG.width / 2, FlxG.height / 2);
+		FlxG.camera.follow(camFollow, null, 0.06);
 		FlxG.camera.snapToTarget();
 
-		_items.changeSelection(0);
+		items.changeSelection(0);
 
 		FlxG.assets.getSound(Paths.sound('menu/scroll'));
 		FlxG.assets.getSound(Paths.sound('menu/confirm'));
@@ -78,33 +78,33 @@ class MainMenuState extends FlxTransitionableState {
 
 	private function _createMenuItem(name:String, callback:() -> Void) {
 		final item = new MainMenuItem().setItem(name, callback);
-		item.y = 140 * _items.length;
-		_items.add(item);
+		item.y = 140 * items.length;
+		items.add(item);
 	}
 
 	private function _onSelectionChanged(selected:MainMenuItem) {
 		selected.getGraphicMidpoint(_camFollowPoint);
-		_camFollow.setPosition(_camFollowPoint.x, _camFollowPoint.y);
+		camFollow.setPosition(_camFollowPoint.x, _camFollowPoint.y);
 
 		FlxG.sound.play(Paths.sound('menu/scroll'), 0.7);
 	}
 
 	private function _startExitState(nextState:NextState) {
-		_items.enabled = false;
+		items.enabled = false;
 
 		FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
 
-		FlxFlicker.flicker(_magenta, 1.1, 0.15, false);
+		FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
-		FlxFlicker.flicker(_items.selectedItem, 1, 0.06, false, false, _ -> {
+		FlxFlicker.flicker(items.selectedItem, 1, 0.06, false, false, _ -> {
 			FlxG.switchState(nextState);
 		});
 
-		for (i in 0..._items.length) {
-			if (i == _items.selectedIndex)
+		for (i in 0...items.length) {
+			if (i == items.selectedIndex)
 				continue;
 
-			FlxTween.tween(_items.members[i], {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
+			FlxTween.tween(items.members[i], {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
 		}
 	}
 
@@ -112,7 +112,7 @@ class MainMenuState extends FlxTransitionableState {
 		super.update(elapsed);
 
 		if (Controls.instance.justPressed.BACK) {
-			_items.enabled = false;
+			items.enabled = false;
 			FlxG.sound.play(Paths.sound('menu/cancel'));
 			FlxG.switchState(() -> new funkin.title.TitleState());
 		}

@@ -31,16 +31,16 @@ class TitleState extends FlxTransitionableState {
 	private var _backgroundVideo:FlxVideoSprite;
 	#end
 
-	private var _gfDance:BopperSprite;
+	public var gfDance:BopperSprite;
 
-	private var _logoBump:FunkinSprite;
-	private var _logoTimer:Float = 0;
+	public var logoBump:FunkinSprite;
+	public var logoTimer:Float = 0;
 
 	private var _titleText:FunkinSprite;
 	private var _titleTimer:Float = 0;
 
-	private var _introVideoLoaded:Bool = false;
-	private var _backgroundVideoLoaded:Bool = false;
+	public var introVideoLoaded(default, null):Bool = false;
+	public var backgroundVideoLoaded(default, null):Bool = false;
 
 	override function create() {
 		FlxTransitionableState.skipNextTransIn = true;
@@ -60,7 +60,7 @@ class TitleState extends FlxTransitionableState {
 
 		_createSprites();
 
-		if (justStarted && _introVideoLoaded)
+		if (justStarted && introVideoLoaded)
 			FlxTimer.wait(0.001, () -> {
 				#if hxvlc
 				_introVideo.play();
@@ -91,7 +91,7 @@ class TitleState extends FlxTransitionableState {
 		_introVideo.bitmap.volumeAdjust = MENU_MUSIC_VOLUME;
 		add(_introVideo);
 
-		_introVideoLoaded = _introVideo.load(Paths.video('klaskiiTitle'));
+		introVideoLoaded = _introVideo.load(Paths.video('klaskiiTitle'));
 		#end
 	}
 
@@ -117,23 +117,23 @@ class TitleState extends FlxTransitionableState {
 		});
 		add(_backgroundVideo);
 
-		_backgroundVideoLoaded = _backgroundVideo.load(Paths.video('titleKickBG'));
+		backgroundVideoLoaded = _backgroundVideo.load(Paths.video('titleKickBG'));
 		#end
 	}
 
 	private function _createSprites() {
-		_gfDance = new BopperSprite(512, 40);
-		_gfDance.frames = FlxAtlasFrames.fromSparrow(Paths.image('title/gf'), Paths.file('title/gf', 'images', 'xml'));
-		_gfDance.addAnimation('danceLeft', 'gfDance', [30].concat([for (i in 0...15) i]));
-		_gfDance.addAnimation('danceRight', 'gfDance', [for (i in 15...30) i]);
-		_gfDance.danceSequence = ['danceRight', 'danceLeft'];
-		_gfDance.kill();
-		add(_gfDance);
+		gfDance = new BopperSprite(512, 40);
+		gfDance.frames = FlxAtlasFrames.fromSparrow(Paths.image('title/gf'), Paths.file('title/gf', 'images', 'xml'));
+		gfDance.addAnimation('danceLeft', 'gfDance', [30].concat([for (i in 0...15) i]));
+		gfDance.addAnimation('danceRight', 'gfDance', [for (i in 15...30) i]);
+		gfDance.danceSequence = ['danceRight', 'danceLeft'];
+		gfDance.kill();
+		add(gfDance);
 
-		_logoBump = new FunkinSprite(-13, 21);
-		_logoBump.loadGraphic(Paths.image('title/logo'));
-		_logoBump.kill();
-		add(_logoBump);
+		logoBump = new FunkinSprite(-13, 21);
+		logoBump.loadGraphic(Paths.image('title/logo'));
+		logoBump.kill();
+		add(logoBump);
 
 		_titleText = new FunkinSprite(100, 576);
 		_titleText.frames = FlxAtlasFrames.fromSparrow(Paths.image('title/titleEnter'), Paths.file('title/titleEnter', 'images', 'xml'));
@@ -177,10 +177,10 @@ class TitleState extends FlxTransitionableState {
 			_titleText.color = FlxColor.interpolate(0xff33ffff, 0xff3333cc, factor);
 			_titleText.alpha = FlxMath.lerp(1, 0.64, factor);
 
-			_logoTimer += elapsed;
+			logoTimer += elapsed;
 
-			final frame = Math.floor(14 * _logoTimer * 1.6); // не спрашивайте что за 1.6, я не помню, но это что то с фпс
-			_logoBump.setGraphicSize( switch frame {
+			final frame = Math.floor(14 * logoTimer * 1.6); // не спрашивайте что за 1.6, я не помню, но это что то с фпс
+			logoBump.setGraphicSize( switch frame {
 				case 0: 683;
 				case 1 | 2: 718;
 				case 3 | 4: 696;
@@ -201,14 +201,14 @@ class TitleState extends FlxTransitionableState {
 
 		MusicPlayback.current.start();
 		#if hxvlc
-		if (_backgroundVideoLoaded)
+		if (backgroundVideoLoaded)
 			_backgroundVideo.play();
 		#end
 
 		FlxG.camera.flash();
 
-		_gfDance.revive();
-		_logoBump.revive();
+		gfDance.revive();
+		logoBump.revive();
 		_titleText.revive();
 
 		_beatHit(0);
@@ -222,8 +222,8 @@ class TitleState extends FlxTransitionableState {
 	}
 
 	private function _beatHit(beat:Int) {
-		if (_gfDance.playDance(beat))
-			_logoTimer = 0;
+		if (gfDance.playDance(beat))
+			logoTimer = 0;
 	}
 	/*private function _startExitState(nextState:NextState) {
 		if (_backgroundVideo != null)

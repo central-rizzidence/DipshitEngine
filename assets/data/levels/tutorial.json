@@ -1,8 +1,12 @@
 {
 	"title": "TEACHING TIME",
 	"sprite": "storymenu/items/tutorial",
-	"songs": ["Tutorial"],
-	"difficulties": ["easy", "normal", "hard"],
+	"songs": {
+		"default": ["Tutorial"]
+	},
+	"difficulties": {
+		"default": ["easy", "normal", "hard"]
+	},
 	"unlocksAfter": "",
 	"preview": {
 		"background": "#f9cf51",

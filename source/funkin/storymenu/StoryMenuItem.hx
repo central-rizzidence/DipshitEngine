@@ -1,5 +1,6 @@
 package funkin.storymenu;
 
+import funkin.storymenu.Level.LevelRegistry;
 import flixel.math.FlxMath;
 import funkin.util.Paths;
 import funkin.util.MenuList.IMenuItem;
@@ -15,36 +16,34 @@ class StoryMenuItem extends FlxSpriteContainer implements IMenuItem {
 	public var targetY:Float = 0;
 	public var level(default, null):Level;
 
-	private var _item:FunkinSprite;
-	private var _lock:FunkinSprite;
+	public var sprite:FunkinSprite;
+	public var lock:FunkinSprite;
 
 	private var _callback:() -> Void;
 
 	public function new() {
 		super();
 
-		_item = new FunkinSprite();
-		add(_item);
+		sprite = new FunkinSprite();
+		add(sprite);
 
-		_lock = new FunkinSprite();
-		_lock.loadGraphic(Paths.image('storymenu/lock'));
-		add(_lock);
+		lock = new FunkinSprite();
+		lock.loadGraphic(Paths.image('storymenu/lock'));
+		add(lock);
 	}
 
 	public function setItem(name:String, callback:() -> Void):StoryMenuItem {
 		this.name = name;
 		_callback = callback;
 
-		level = Level.get(name);
-
-		_item.loadGraphic(Paths.image(level.sprite));
-		_lock.x = _item.x + _item.width + LOCK_PADDING;
+		level = LevelRegistry.instance.findEntry(name);
+		level.configureItem(this);
+		lock.x = sprite.x + sprite.width + LOCK_PADDING;
 
 		unlocked = true;
 		screenCenter(X);
 
 		// TODO: lock levels
-		unlocked = true;
 
 		return this;
 	}
@@ -66,9 +65,9 @@ class StoryMenuItem extends FlxSpriteContainer implements IMenuItem {
 	@:noCompletion
 	private function set_unlocked(value:Bool):Bool {
 		if (value)
-			remove(_lock);
+			remove(lock);
 		else
-			add(_lock);
+			add(lock);
 
 		return unlocked = value;
 	}
