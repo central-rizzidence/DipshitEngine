@@ -11,7 +11,7 @@ class LevelPreviewProp extends FunkinSprite {
 		setPosition(data.position.x, data.position.y);
 
 		if (data.animations?.length > 0) {
-			loadFrames(Paths.file(data.sprite, 'images'));
+			frames = Paths.getFrames(data.sprite);
 			active = true;
 
 			for (animation in data.animations)

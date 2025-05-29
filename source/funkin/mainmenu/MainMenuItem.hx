@@ -1,9 +1,11 @@
 package funkin.mainmenu;
 
+import flixel.FlxSprite;
+import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.util.Paths;
 import funkin.util.MenuList.IMenuItem;
 
-class MainMenuItem extends FunkinSprite implements IMenuItem {
+class MainMenuItem extends FlxSprite implements IMenuItem {
 	public var name(default, null):String;
 
 	private var _callback:() -> Void;
@@ -12,11 +14,11 @@ class MainMenuItem extends FunkinSprite implements IMenuItem {
 		this.name = name;
 		_callback = callback;
 
-		var isSelected = getCurrentAnimation() == 'selected';
+		var isSelected = animation.name == 'selected';
 
-		loadFrames(Paths.file('mainmenu/$name', 'images'));
-		addAnimation('idle', 'idle', true);
-		addAnimation('selected', 'selected', true);
+		frames = Paths.getFrames('mainmenu/$name');
+		animation.addByPrefix('idle', 'idle', 24);
+		animation.addByPrefix('selected', 'selected', 24);
 
 		if (isSelected)
 			_select();
@@ -27,13 +29,13 @@ class MainMenuItem extends FunkinSprite implements IMenuItem {
 	}
 
 	private function _idle() {
-		playAnimation('idle');
+		animation.play('idle');
 		updateHitbox();
 		screenCenter(X);
 	}
 
 	private function _select() {
-		playAnimation('selected');
+		animation.play('selected');
 		centerOffsets();
 	}
 }

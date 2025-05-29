@@ -5,10 +5,9 @@
 ### Setup
 
 Open cmd and run the following commands:
- - `haxelib install hmm`
- - `haxelib run hmm setup`
- - `hmm install`
+ - `haxe --run scripts.Script`
+ - `haxelib run lime setup`
 
 ### Compilation
 
-Open cmd and run `haxelib run lime test {windows/mac/linux/html5}`
+Open cmd and run `lime test {windows/mac/linux/html5}`

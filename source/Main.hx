@@ -1,3 +1,6 @@
+import sys.thread.Thread;
+import funkin.util.MemoryUtil;
+import funkin.logging.CrashHandler;
 import funkin.debug.DebugInfo;
 import flixel.FlxGame;
 import funkin.util.Paths;
@@ -8,6 +11,8 @@ import openfl.display.Sprite;
 
 class Main extends Sprite {
 	private function new() {
+		CrashHandler.setupCallbacks();
+
 		super();
 
 		if (stage != null)

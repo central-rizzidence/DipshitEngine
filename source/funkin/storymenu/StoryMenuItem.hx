@@ -1,6 +1,6 @@
 package funkin.storymenu;
 
-import funkin.storymenu.Level.LevelRegistry;
+import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import funkin.util.Paths;
 import funkin.util.MenuList.IMenuItem;
@@ -16,19 +16,20 @@ class StoryMenuItem extends FlxSpriteContainer implements IMenuItem {
 	public var targetY:Float = 0;
 	public var level(default, null):Level;
 
-	public var sprite:FunkinSprite;
-	public var lock:FunkinSprite;
+	public var sprite:FlxSprite;
+	public var lock:FlxSprite;
+
+	public var isFlashing:Bool = false;
 
 	private var _callback:() -> Void;
 
 	public function new() {
 		super();
 
-		sprite = new FunkinSprite();
+		sprite = new FlxSprite();
 		add(sprite);
 
-		lock = new FunkinSprite();
-		lock.loadGraphic(Paths.image('storymenu/lock'));
+		lock = new FlxSprite(Paths.image('storymenu/lock'));
 		add(lock);
 	}
 
@@ -36,7 +37,7 @@ class StoryMenuItem extends FlxSpriteContainer implements IMenuItem {
 		this.name = name;
 		_callback = callback;
 
-		level = LevelRegistry.instance.findEntry(name);
+		level = Level.load(name);
 		level.configureItem(this);
 		lock.x = sprite.x + sprite.width + LOCK_PADDING;
 
@@ -48,10 +49,22 @@ class StoryMenuItem extends FlxSpriteContainer implements IMenuItem {
 		return this;
 	}
 
-	override function update(elapsed:Float) {
-		super.update(elapsed);
+	private var _flashTimer:Float = 0;
+	final flashFramerate:Float = 20;
 
+	override function update(elapsed:Float) {
 		y = FlxMath.lerp(y, targetY, FlxMath.getElapsedLerp(0.17, elapsed));
+
+		// TODO: поправить
+		if (isFlashing) {
+			_flashTimer += elapsed;
+			if (_flashTimer >= 1 / flashFramerate) {
+				_flashTimer %= 1 / flashFramerate;
+				sprite.color = (sprite.color == 0xffffffff) ? 0xff33ffff : 0xffffffff;
+			}
+		}
+
+		super.update(elapsed);
 	}
 
 	private function _idle() {

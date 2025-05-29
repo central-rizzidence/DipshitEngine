@@ -3,7 +3,7 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' - Soda Engine" file="Funkin" main="Main" version="Undefined" company="sadsoda"/>
+	<app title="Friday Night Funkin' - Soda Engine" file="Funkin" main="Main" version="0.0.1" company="sadsoda"/>
 
 	<!-- I don't know if it's necessary, but I'll keep it just in case -->
 	<!-- Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2 -->
@@ -11,11 +11,11 @@
 
 	<!-- _______________________ Soda Engine Customization ______________________ -->
 
-	<define name="CHECK_FOR_UPDATES"/>
-
 	<!-- <define name="MOD_SUPPORT"/> -->
 
 	<!-- <define name="REDIRECT_ASSETS" if="debug"/> -->
+
+	<define name="CAN_PLAY_VIDEOS" if="cpp"/>
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
@@ -54,7 +54,7 @@
 
 	<assets path="assets/fonts" embed="true"/>
 
-	<assets path="alsoftrc.ini"/>
+	<assets path="alsoftrc.ini" rename="plugins/alsoftrc.ini"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -80,8 +80,9 @@
 	<haxelib name="json2object"/>
 
 	<!-- Video playback -->
-	<haxelib name="hxvlc" if="cpp"/>
+	<haxelib name="hxvlc" if="CAN_PLAY_VIDEOS cpp"/>
 
+	<!-- OpenFL tweening -->
 	<haxelib name="actuate"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->

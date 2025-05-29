@@ -1,12 +1,12 @@
 package funkin.util;
 
+import flixel.graphics.frames.FlxAtlasFrames;
 import haxe.macro.Compiler;
 import flixel.util.FlxSave;
 import flixel.FlxG;
 import haxe.io.Path;
 
 final class Paths {
-	public static final SOUND_EXTENSION:String = Compiler.getDefine('FLX_DEFAULT_SOUND_EXT');
 	public static inline var VIDEO_EXTENSION:String = 'mp4';
 
 	@:access(flixel.util.FlxSave.validate)
@@ -36,10 +36,10 @@ final class Paths {
 	public static function file(id:String, ?directory:String, ?extension:String):String {
 		final library = getLibrary(id);
 
-		final prefix = ![null, 'default'].contains(library) ? '$library:assets/$library' : 'assets';
-		final suffix = extension != null ? '$id.$extension' : id;
+		final prefix = ![null, 'default'].contains(library) ? '$library:assets/$library/' : 'assets/';
+		final suffix = extension != null ? asExtension(extension) : '';
 
-		return directory != null ? '$prefix/$directory/$suffix' : '$prefix/$suffix';
+		return directory != null ? prefix + asDirectory(directory) + id + suffix : '$prefix$id$suffix';
 	}
 
 	public static inline function font(id:String, extension:String = 'ttf'):String {
@@ -50,8 +50,12 @@ final class Paths {
 		return file(id, 'images', 'png');
 	}
 
+	public static inline function music(id:String):String {
+		return file('$id/$id', 'music');
+	}
+
 	public static inline function sound(id:String):String {
-		return file(id, 'sounds', SOUND_EXTENSION);
+		return file(id, 'sounds');
 	}
 
 	public static inline function video(id:String):String {
@@ -64,5 +68,41 @@ final class Paths {
 
 	public static inline function asExtension(string:String):String {
 		return string.fastCodeAt(0) == '.'.code ? string : '.$string';
+	}
+
+	public static function hasFrames(id:String):Bool {
+		var description = file(id, 'images', 'txt');
+		if (FlxG.assets.exists(description, TEXT))
+			return true;
+
+		description = file(id, 'images', 'json');
+		if (FlxG.assets.exists(description, TEXT))
+			return true;
+
+		description = file(id, 'images', 'xml');
+		if (FlxG.assets.exists(description, TEXT))
+			return true;
+
+		return false;
+	}
+
+	public static function getFrames(id:String):Null<FlxAtlasFrames> {
+		var description = file(id, 'images', 'txt');
+		if (FlxG.assets.exists(description, TEXT))
+			return FlxAtlasFrames.fromSpriteSheetPacker(image(id), description);
+
+		description = file(id, 'images', 'json');
+		if (FlxG.assets.exists(description, TEXT))
+			return FlxAtlasFrames.fromTexturePackerJson(image(id), description);
+
+		description = file(id, 'images', 'xml');
+		if (FlxG.assets.exists(description, TEXT))
+			return FlxAtlasFrames.fromSparrow(image(id), description);
+
+		return null;
+	}
+
+	public static inline function textureAtlas(id:String):String {
+		return file(id, 'images');
 	}
 }

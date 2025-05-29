@@ -4,20 +4,22 @@ import funkin.input.Controls;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxTimer;
 import funkin.util.Paths;
 #if hxvlc
 import hxvlc.flixel.FlxVideoSprite;
 #end
-import funkin.music.MusicPlayback;
+import funkin.music.Conductor;
+import funkin.music.MusicMetadata;
 import flixel.addons.transition.FlxTransitionableState;
+
+using funkin.sound.FlxSoundTools;
 
 class TitleState extends FlxTransitionableState {
 	public static inline var MENU_MUSIC:String = 'klaskiiLoop';
 	public static inline var MENU_MUSIC_VOLUME:Float = 0.6;
 
-	public static inline var LOGO_BUMP_WIDTH:Float = 718;
+	public static var menuMusicConductor:Conductor;
 
 	public static var justStarted:Bool = true;
 
@@ -26,18 +28,17 @@ class TitleState extends FlxTransitionableState {
 	public var isIntroSkipped(default, null):Bool = false;
 	public var isEnterPressed(default, null):Bool = false;
 
+	public var gfDance(default, null):BopperSprite;
+	public var logoBump(default, null):FunkinSprite;
+	public var titleText(default, null):FunkinSprite;
+
+	private var _logoTimer:Float = 0;
+	private var _titleTimer:Float = 0;
+
 	#if hxvlc
 	private var _introVideo:FlxVideoSprite;
 	private var _backgroundVideo:FlxVideoSprite;
 	#end
-
-	public var gfDance:BopperSprite;
-
-	public var logoBump:FunkinSprite;
-	public var logoTimer:Float = 0;
-
-	private var _titleText:FunkinSprite;
-	private var _titleTimer:Float = 0;
 
 	public var introVideoLoaded(default, null):Bool = false;
 	public var backgroundVideoLoaded(default, null):Bool = false;
@@ -47,12 +48,15 @@ class TitleState extends FlxTransitionableState {
 		persistentUpdate = true;
 		super.create();
 
-		MusicPlayback.current = FlxDestroyUtil.destroy(MusicPlayback.current);
-		MusicPlayback.current = new MusicPlayback(MENU_MUSIC);
-		MusicPlayback.current.volume = MENU_MUSIC_VOLUME;
-		MusicPlayback.current.looped.add(() -> FlxG.log.notice('Playback should be looped!'));
-
+		FlxG.assets.getSound(Paths.music(MENU_MUSIC));
 		FlxG.assets.getSound(Paths.sound('menu/confirm'));
+
+		final menuMusicMetadata = MusicMetadata.get(MENU_MUSIC);
+		menuMusicConductor = new Conductor(menuMusicMetadata.timeChanges);
+		FlxG.signals.preUpdate.add(() -> {
+			if (FlxG.sound.music?.playing)
+				menuMusicConductor.updateTime(FlxG.sound.music.getAccurateTime());
+		});
 
 		if (justStarted)
 			_createIntroVideo();
@@ -123,7 +127,7 @@ class TitleState extends FlxTransitionableState {
 
 	private function _createSprites() {
 		gfDance = new BopperSprite(512, 40);
-		gfDance.frames = FlxAtlasFrames.fromSparrow(Paths.image('title/gf'), Paths.file('title/gf', 'images', 'xml'));
+		gfDance.frames = Paths.getFrames('title/gf');
 		gfDance.addAnimation('danceLeft', 'gfDance', [30].concat([for (i in 0...15) i]));
 		gfDance.addAnimation('danceRight', 'gfDance', [for (i in 15...30) i]);
 		gfDance.danceSequence = ['danceRight', 'danceLeft'];
@@ -135,15 +139,15 @@ class TitleState extends FlxTransitionableState {
 		logoBump.kill();
 		add(logoBump);
 
-		_titleText = new FunkinSprite(100, 576);
-		_titleText.frames = FlxAtlasFrames.fromSparrow(Paths.image('title/titleEnter'), Paths.file('title/titleEnter', 'images', 'xml'));
-		_titleText.addAnimation('idle', 'ENTER IDLE', true);
-		_titleText.addAnimation('pressed', 'ENTER PRESSED', true);
-		_titleText.playAnimation('idle');
-		_titleText.kill();
-		add(_titleText);
+		titleText = new FunkinSprite(100, 576);
+		titleText.frames = Paths.getFrames('title/titleEnter');
+		titleText.addAnimation('idle', 'ENTER IDLE', true);
+		titleText.addAnimation('pressed', 'ENTER PRESSED', true);
+		titleText.playAnimation('idle');
+		titleText.kill();
+		add(titleText);
 
-		MusicPlayback.current.conductor.beatHit.add(_beatHit);
+		menuMusicConductor.beatHit.add(_beatHit);
 	}
 
 	override function update(elapsed:Float) {
@@ -151,9 +155,9 @@ class TitleState extends FlxTransitionableState {
 			if (canSkipIntro && !isIntroSkipped)
 				skipIntro();
 			else if (!isEnterPressed) {
-				_titleText.color = 0xffffffff;
-				_titleText.alpha = 1;
-				_titleText.playAnimation('pressed');
+				titleText.color = 0xffffffff;
+				titleText.alpha = 1;
+				titleText.playAnimation('pressed');
 
 				FlxG.camera.flash(true);
 				FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
@@ -174,12 +178,12 @@ class TitleState extends FlxTransitionableState {
 				_titleTimer -= 2;
 
 			final factor = FlxEase.quadInOut(_titleTimer >= 1 ? -_titleTimer + 2 : _titleTimer);
-			_titleText.color = FlxColor.interpolate(0xff33ffff, 0xff3333cc, factor);
-			_titleText.alpha = FlxMath.lerp(1, 0.64, factor);
+			titleText.color = FlxColor.interpolate(0xff33ffff, 0xff3333cc, factor);
+			titleText.alpha = FlxMath.lerp(1, 0.64, factor);
 
-			logoTimer += elapsed;
+			_logoTimer += elapsed;
 
-			final frame = Math.floor(14 * logoTimer * 1.6); // не спрашивайте что за 1.6, я не помню, но это что то с фпс
+			final frame = Math.floor(14 * _logoTimer * 1.6); // не спрашивайте что за 1.6, я не помню, но это что то с фпс
 			logoBump.setGraphicSize( switch frame {
 				case 0: 683;
 				case 1 | 2: 718;
@@ -195,21 +199,20 @@ class TitleState extends FlxTransitionableState {
 		if (isIntroSkipped)
 			return;
 
+		FlxG.sound.playMusic(Paths.music(MENU_MUSIC), MENU_MUSIC_VOLUME);
+
 		#if hxvlc
 		_introVideo = FlxDestroyUtil.destroy(_introVideo);
-		#end
 
-		MusicPlayback.current.start();
-		#if hxvlc
 		if (backgroundVideoLoaded)
 			_backgroundVideo.play();
 		#end
 
-		FlxG.camera.flash();
+		FlxG.camera.flash(true);
 
 		gfDance.revive();
 		logoBump.revive();
-		_titleText.revive();
+		titleText.revive();
 
 		_beatHit(0);
 
@@ -217,22 +220,19 @@ class TitleState extends FlxTransitionableState {
 	}
 
 	override function destroy() {
-		MusicPlayback.current.conductor.beatHit.remove(_beatHit);
+		menuMusicConductor.beatHit.remove(_beatHit);
 		super.destroy();
 	}
 
 	private function _beatHit(beat:Int) {
 		if (gfDance.playDance(beat))
-			logoTimer = 0;
+			_logoTimer = 0;
 	}
-	/*private function _startExitState(nextState:NextState) {
-		if (_backgroundVideo != null)
-			FlxTween.tween(_backgroundVideo, {alpha: 0}, 1);
 
-		FlxTween.tween(_logoBump, {y: _logoBump.y + FlxG.height}, 1, {ease: FlxEase.expoIn});
-		FlxTween.tween(_gfDance, {x: _gfDance.x + FlxG.width}, 1, {ease: FlxEase.backIn});
+	public static function playMenuMusic() {
+		final menuMusicMetadata = MusicMetadata.get(MENU_MUSIC);
+		menuMusicConductor.setTimeChanges(menuMusicMetadata.timeChanges);
 
-		FlxTransitionableState.skipNextTransOut = true;
-		FlxTimer.wait(2, () -> FlxG.switchState(() -> new funkin.mainmenu.MainMenuState()));
-	}*/
+		FlxG.sound.playMusic(Paths.music(MENU_MUSIC), MENU_MUSIC_VOLUME);
+	}
 }

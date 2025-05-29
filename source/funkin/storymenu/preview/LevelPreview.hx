@@ -1,18 +1,17 @@
 package funkin.storymenu.preview;
 
-import funkin.scoring.Highscore;
 import flixel.text.FlxText;
 import flixel.group.FlxContainer;
 
 class LevelPreview extends FlxContainer {
 	public var titleText:FlxText;
 
-	public var background:FunkinSprite;
+	public var background(default, null):FunkinSprite;
 
 	public var cachedProps:Array<LevelPreviewProp> = [];
 	public var cachedBopperProps:Array<LevelPreviewBopperProp> = [];
 
-	public var songsText:FlxText;
+	public var songsText(default, null):FlxText;
 
 	public function new() {
 		super();
@@ -40,8 +39,10 @@ class LevelPreview extends FlxContainer {
 	}
 
 	public function playPropsDance(beat:Int) {
-		for (bopperProp in cachedBopperProps)
-			bopperProp.playDance(beat);
+		for (bopperProp in cachedBopperProps) {
+			if (bopperProp.getCurrentAnimationName() != 'confirm')
+				bopperProp.playDance(beat);
+		}
 	}
 
 	public function playPropsConfirm() {

@@ -22,8 +22,7 @@
 						"attachedTrack": 1,
 						"muteOnMiss": true
 					}
-				],
-				"noteSpeed": 2.4
+				]
 			},
 			"difficulties": [
 				{"id": "easy", "chart": "easy"},
@@ -31,7 +30,10 @@
 				{"id": "hard", "chart": "hard"}
 			],
 			"charts": {
-				"easy": {}
+				"easy": {
+					"notes": [],
+					"noteSpeed": 2.4
+				}
 			}
 		}
 	}

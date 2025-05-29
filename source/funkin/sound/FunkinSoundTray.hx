@@ -7,19 +7,16 @@ import openfl.display.Bitmap;
 import flixel.system.ui.FlxSoundTray;
 
 class FunkinSoundTray extends FlxSoundTray {
+	public static inline var GRAPHIC_SCALE:Float = 0.3;
+
 	public var volumeMaxSound:Null<String>;
-
-	private var _yTarget:Float = 0;
-	private var _alphaTarget:Float = 0;
-
-	private var _graphicScale:Float = 0.3;
 
 	public function new() {
 		super();
 		removeChildren();
 
 		final bg = new Bitmap(FlxG.assets.getBitmapData(Paths.image('soundtray/volumebox')));
-		bg.scaleX = bg.scaleY = _graphicScale;
+		bg.scaleX = bg.scaleY = GRAPHIC_SCALE;
 		bg.smoothing = true;
 		addChild(bg);
 
@@ -29,7 +26,7 @@ class FunkinSoundTray extends FlxSoundTray {
 		final backingBar = new Bitmap(FlxG.assets.getBitmapData(Paths.image('soundtray/bars_10')));
 		backingBar.x = 9;
 		backingBar.y = 5;
-		backingBar.scaleX = backingBar.scaleY = _graphicScale;
+		backingBar.scaleX = backingBar.scaleY = GRAPHIC_SCALE;
 		backingBar.smoothing = true;
 		backingBar.alpha = 0.4;
 		addChild(backingBar);
@@ -40,7 +37,7 @@ class FunkinSoundTray extends FlxSoundTray {
 			final bar = new Bitmap(FlxG.assets.getBitmapData(Paths.image('soundtray/bars_$i')));
 			bar.x = 9;
 			bar.y = 5;
-			bar.scaleX = bar.scaleY = _graphicScale;
+			bar.scaleX = bar.scaleY = GRAPHIC_SCALE;
 			bar.smoothing = true;
 			addChild(bar);
 			_bars.push(bar);

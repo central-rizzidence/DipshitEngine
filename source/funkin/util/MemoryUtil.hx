@@ -64,6 +64,8 @@ final class MemoryUtil {
 		#elseif (java || neko)
 		final stats = Gc.stats();
 		return stats.heap - stats.free;
+		#else
+		return js.Syntax.code('(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0');
 		#end
 	}
 
@@ -80,6 +82,8 @@ final class MemoryUtil {
 		#elseif (java || neko)
 		final stats = Gc.stats();
 		return stats.heap;
+		#else
+		return js.Syntax.code('(window.performance && window.performance.memory) ? window.performance.memory.totalJSHeapSize : 0');
 		#end
 	}
 }

@@ -13,7 +13,7 @@ final class Bindings {
 		BACK => [FlxKey.ESCAPE, FlxKey.BACKSPACE],
 		ACCEPT => [FlxKey.SPACE, FlxKey.ENTER],
 		RELOAD_ASSETS => [FlxKey.F5],
-		TOGGLE_DEBUGGER => [FlxKey.F2]
+		TOGGLE_DEBUGGER => [FlxKey.F3]
 	];
 
 	public static var gamepad:Map<Action, Array<FlxGamepadInputID>> = buildNullGamepadBindings();

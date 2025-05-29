@@ -9,32 +9,50 @@ import flixel.math.FlxPoint;
 import funkin.util.JsonUtil;
 import json2object.JsonParser;
 import funkin.util.Paths;
-import funkin.util.Registry;
 
-class Level implements IRegistryEntry<LevelData> {
-	public final id:String;
+class Level {
+	private static var _levelCount:Int = 0;
+
+	public var id(default, null):String;
+
+	public var title(get, set):String;
 
 	private var _data:Null<LevelData>;
 
 	private static final _parser:JsonParser<LevelData> = new JsonParser<LevelData>();
 
-	public function new(id:String) {
-		this.id = id;
+	public static function list():Array<String> {
+		final prefix = Paths.asDirectory(Paths.file('levels', 'data'));
+		final suffix = Paths.asExtension('json');
 
-		final path = Paths.asDirectory(LevelRegistry.ASSETS_DIRECTORY) + id + Paths.asExtension(LevelRegistry.ASSETS_EXTENSION);
+		return FlxG.assets.list(TEXT)
+			.filter(asset -> asset.startsWith(prefix) && asset.endsWith(suffix))
+			.map(asset -> asset.substring(prefix.length, asset.length - suffix.length));
+	}
+
+	public static function load(id:String):Null<Level> {
+		final path = Paths.file('levels/$id', 'data', 'json');
+		if (!FlxG.assets.exists(path, TEXT)) {
+			FlxG.log.warn('There is no level $id');
+			return null;
+		}
+
 		final json = FlxG.assets.getText(path);
 
 		_parser.fromJson(json, path);
 		JsonUtil.logErrors(_parser.errors);
-		_data = _parser.value;
+
+		if (_parser.value != null) {
+			final level = new Level(_parser.value);
+			level.id = id;
+			return level;
+		}
+		return null;
 	}
 
-	public inline function hasValidData():Bool {
-		return _data != null;
-	}
-
-	public inline function getTitle():String {
-		return _data.title;
+	public function new(data:LevelData) {
+		this.id = 'runtime[${_levelCount++}]';
+		_data = data;
 	}
 
 	public inline function configureItem(item:StoryMenuItem):StoryMenuItem {
@@ -102,8 +120,14 @@ class Level implements IRegistryEntry<LevelData> {
 		return preview;
 	}
 
-	public function destroy() {
-		_data = null;
+	@:noCompletion
+	private inline function get_title():String {
+		return _data.title;
+	}
+
+	@:noCompletion
+	private function set_title(value:String):String {
+		return _data.title = value;
 	}
 }
 
@@ -119,31 +143,4 @@ class LevelData {
 	@:jcustomparse(funkin.util.DataUtil.parseJsonPointOptional)
 	@:jcustomparse(funkin.util.DataUtil.writeJsonPoint)
 	@:optional public var offsets:Null<FlxPoint>;
-}
-
-class LevelRegistry extends TypedAssetRegistry<Level, LevelData> {
-	public static final ASSETS_DIRECTORY = Paths.file('levels', 'data');
-	public static inline var ASSETS_EXTENSION = 'json';
-
-	public static final instance:LevelRegistry = new LevelRegistry('levels');
-
-	public function new(id:String) {
-		super(id, ASSETS_DIRECTORY, ASSETS_EXTENSION, Level.new);
-	}
-
-	override function reloadEntries():LevelRegistry {
-		destroyEntries();
-
-		// TODO: scripted entries
-
-		for (entryId in scanEntryIds()) {
-			final entry = _entryFactory(entryId);
-			if (entry.hasValidData())
-				registerEntry(entry);
-			else
-				entry.destroy();
-		}
-
-		return this;
-	}
 }

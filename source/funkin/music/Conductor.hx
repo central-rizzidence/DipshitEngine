@@ -1,5 +1,6 @@
 package funkin.music;
 
+import funkin.music.MusicMetadata.MusicTimeChange;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxSort;
 import funkin.music.MusicMetadata.MusicTimeChange;
@@ -21,6 +22,10 @@ class Conductor implements IFlxDestroyable {
 		beatHit = new FlxTypedSignal<(Int) -> Void>();
 		measureHit = new FlxTypedSignal<(Int) -> Void>();
 
+		setTimeChanges(timeChanges);
+	}
+
+	public function setTimeChanges(timeChanges:Array<MusicTimeChange>) {
 		_timeChanges = timeChanges.copy();
 		_timeChanges.sort(sortTimeChanges);
 	}

@@ -21,7 +21,6 @@
 	"files.eol": "\n",
 
 	"files.associations": {
-		"*.hxp": "haxe",
 		"*.hxc": "haxe"
 	},
 
@@ -29,5 +28,7 @@
 	"search.exclude": {
 		"**/.haxelib": true,
 		"**/export": true
-	}
+	},
+
+	"haxe.enableCompilationServer": false
 }

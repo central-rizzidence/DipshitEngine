@@ -4,16 +4,16 @@ import flixel.math.FlxPoint;
 import funkin.animation.AnimationData.OffsetAnimationData;
 import flixel.util.FlxColor;
 
+@:structInit
 class LevelPreviewData {
 	@:jcustomparse(funkin.util.DataUtil.parseJsonColor)
 	@:jcustomparse(funkin.util.DataUtil.writeJsonColor)
 	public var background:FlxColor;
 
 	@:optional public var props:Null<Array<LevelPreviewPropData>>;
-
-	public function new(background:FlxColor = 0xfff9cf51) {}
 }
 
+@:structInit
 class LevelPreviewPropData {
 	public var sprite:String;
 	public var scale:Float;
@@ -24,19 +24,10 @@ class LevelPreviewPropData {
 	@:jcustomparse(funkin.util.DataUtil.parseJsonPointOptional)
 	@:jcustomparse(funkin.util.DataUtil.writeJsonPoint)
 	@:optional public var position:Null<FlxPoint>;
-
-	public function new(sprite:String, scale:Float = 1) {
-		this.sprite = sprite;
-		this.scale = scale;
-	}
 }
 
+@:structInit
 class LevelPreviewBopperData {
 	public var danceSequence:Array<String>;
 	public var danceEvery:Int;
-
-	public function new(?sequence:Array<String>, every:Int = 2) {
-		danceSequence = sequence ?? ['idle'];
-		danceEvery = every;
-	}
 }

@@ -1,5 +1,6 @@
 package funkin.mainmenu;
 
+import flixel.FlxSprite;
 import funkin.input.Controls;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -13,7 +14,7 @@ import funkin.util.Paths;
 import flixel.addons.transition.FlxTransitionableState;
 
 class MainMenuState extends FlxTransitionableState {
-	public var magenta:FunkinSprite;
+	public var magenta:FlxSprite;
 	public var items:TypedMenuList<MainMenuItem>;
 
 	public var camFollow:FlxObject;
@@ -24,8 +25,7 @@ class MainMenuState extends FlxTransitionableState {
 		persistentUpdate = true;
 		super.create();
 
-		var bg = new FunkinSprite();
-		bg.loadGraphic(Paths.image('menuBG'));
+		var bg = new FlxSprite(Paths.image('menuBG'));
 		bg.scrollFactor.set();
 		bg.setGraphicSize(bg.width * 1.175);
 		bg.updateHitbox();
@@ -33,8 +33,7 @@ class MainMenuState extends FlxTransitionableState {
 		bg.active = false;
 		add(bg);
 
-		magenta = new FunkinSprite(bg.x, bg.y);
-		magenta.loadGraphic(Paths.image('menuDesat'));
+		magenta = new FlxSprite(bg.x, bg.y, Paths.image('menuDesat'));
 		magenta.scrollFactor.copyFrom(bg.scrollFactor);
 		magenta.scale.copyFrom(bg.scale);
 		magenta.updateHitbox();
@@ -50,7 +49,7 @@ class MainMenuState extends FlxTransitionableState {
 		_createMenuItem('storymode', () -> _startExitState(() -> new funkin.storymenu.StoryMenuState()));
 		_createMenuItem('freeplay', () -> _startExitState(null));
 		_createMenuItem('options', () -> _startExitState(null));
-		_createMenuItem('credits', () -> _startExitState(null));
+		_createMenuItem('credits', () -> _startExitState(() -> new funkin.credits.CreditsMenuState()));
 
 		bg.scrollFactor.y = magenta.scrollFactor.y = Math.max(0.25 - (0.05 * (items.length - 4)), 0.1);
 

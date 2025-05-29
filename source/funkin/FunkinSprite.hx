@@ -1,6 +1,5 @@
 package funkin;
 
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxPoint;
 import flxanimate.FlxAnimate;
 
@@ -16,21 +15,6 @@ class FunkinSprite extends FlxAnimate {
 
 	public function new(x:Float = 0, y:Float = 0) {
 		super(x, y);
-	}
-
-	public function loadFrames(id:String):FunkinSprite {
-		if (FlxG.assets.exists('$id/Animation.json', TEXT))
-			loadAtlas(id);
-		else if (FlxG.assets.exists('$id.txt', TEXT))
-			frames = FlxAtlasFrames.fromSpriteSheetPacker('$id.png', '$id.txt');
-		else if (FlxG.assets.exists('$id.json', TEXT))
-			frames = FlxAtlasFrames.fromTexturePackerJson('$id.png', '$id.json');
-		else if (FlxG.assets.exists('$id.xml', TEXT))
-			frames = FlxAtlasFrames.fromSparrow('$id.png', '$id.xml');
-		else
-			FlxG.log.error('Frames $id does not exist');
-
-		return this;
 	}
 
 	public function addAnimation(name:String, prefix:String, ?frameIndices:Array<Int>, framesPerSecond:Float = 24, shouldLoop:Bool = false, ?offsets:FlxPoint) {
@@ -59,7 +43,7 @@ class FunkinSprite extends FlxAnimate {
 		return useAtlas ? anim.existsByName(name) : animation.exists(name);
 	}
 
-	public function getCurrentAnimation():Null<String> {
+	public function getCurrentAnimationName():Null<String> {
 		return useAtlas ? anim.curAnimName : animation.name;
 	}
 
@@ -69,7 +53,7 @@ class FunkinSprite extends FlxAnimate {
 
 	override function update(elapsed:Float) {
 		if (autoUpdateOffsets) {
-			final animationName = getCurrentAnimation();
+			final animationName = getCurrentAnimationName();
 			if (_lastOffsettedAnimation != animationName) {
 				updateOffsets();
 				_lastOffsettedAnimation = animationName;
@@ -78,7 +62,7 @@ class FunkinSprite extends FlxAnimate {
 
 		// TODO: оно не работает
 		if (isAnimationCompleted()) {
-			final animationName = getCurrentAnimation();
+			final animationName = getCurrentAnimationName();
 			if (animationName != null && animationChain.exists(animationName)) {
 				if (hasAnimation(animationChain[animationName]))
 					playAnimation(animationChain[animationName]);

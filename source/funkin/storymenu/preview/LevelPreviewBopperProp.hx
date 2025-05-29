@@ -13,7 +13,7 @@ class LevelPreviewBopperProp extends BopperSprite {
 		setPosition(data.position.x, data.position.y);
 
 		if (data.animations?.length > 0) {
-			loadFrames(Paths.file(data.sprite, 'images'));
+			frames = Paths.getFrames(data.sprite);
 			active = true;
 
 			danceSequence = data.bopper.danceSequence;

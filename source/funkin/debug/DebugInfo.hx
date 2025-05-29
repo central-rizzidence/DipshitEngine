@@ -132,7 +132,7 @@ final class DebugInfo extends Sprite {
 		_flixelInfo.text += '\nDraws: Not implemented';
 		_flixelInfo.text += '\nTweens: ${FlxTween.globalManager._tweens.length}';
 		_flixelInfo.text += '\nTimers: ${FlxTimer.globalManager._timers.length}';
-		_flixelInfo.text += '\nSounds: ${FlxG.sound.defaultSoundGroup.sounds.length + FlxG.sound.defaultMusicGroup.sounds.length}';
+		_flixelInfo.text += '\nState: ${Type.getClassName(Type.getClass(FlxG.state))}';
 
 		_polymodInfo.x = _flixelInfo.x + _flixelInfo.width + PADDING;
 		_polymodInfo.text = 'Loaded mods: Not implemented';
