@@ -1,118 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 
-	<!-- _________________________ Application Settings _________________________ -->
+	<!-- _____________________ Customizations _____________________ -->
 
-	<app title="Friday Night Funkin' - Soda Engine" file="Funkin" main="Main" version="0.0.1" company="sadsoda"/>
+	<meta title="Friday Night Funkin' - Dipshit Engine" packageName="io.sadsoda.funkin" company="sadsoda" version="0.0.1"/>
+	<app file="DipshitEngine"/>
 
-	<!-- I don't know if it's necessary, but I'll keep it just in case -->
-	<!-- Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2 -->
-	<set name="SWF_VERSION" value="11.8"/>
+	<define name="FEATURE_VIDEOS"/>
 
-	<!-- _______________________ Soda Engine Customization ______________________ -->
+	<!-- _____________________ Internal stuff _____________________ -->
 
-	<!-- <define name="MOD_SUPPORT"/> -->
+	<app preloader="flixel.system.FlxPreloader"/>
 
-	<!-- <define name="REDIRECT_ASSETS" if="debug"/> -->
+	<window width="1280" height="720" background="#121214"/>
+	<window fps="60" hardware="true" vsync="false"/>
 
-	<define name="CAN_PLAY_VIDEOS" if="cpp"/>
-
-	<!-- ____________________________ Window Settings ___________________________ -->
-
-	<!-- These window settings apply to all targets -->
-	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false"/>
-
-	<!-- Web-specific -->
 	<window if="web" resizable="true"/>
-
-	<!-- Desktop-specific -->
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" allow-high-dpi="true"/>
-
-	<!-- Mobile-specific -->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0"/>
-
-	<!-- _____________________________ Path Settings ____________________________ -->
-
-	<app path="export/${buildType}"/>
-	<app path="export/release" if="final"/>
-	<app path="export/32bit" if="32bit"/>
+	<window if="mobile" orientation="landscape" fullscreen="false" width="0" height="0"/>
 
 	<source path="source"/>
 
-	<set name="AUDIO_FILTER" value="*.ogg"/>
-	<set name="AUDIO_FILTER" value="*.mp3" if="web"/>
+	<app path="export/${buildType}"/>
+	<app path="${app.path}-32bits" if="32bits"/>
 
-	<section unless="REDIRECT_ASSETS">
-		<assets path="assets/data"/>
-		<assets path="assets/images"/>
-		<assets path="assets/music" include="${AUDIO_FILTER}|*.json"/>
-		<assets path="assets/sounds" include="${AUDIO_FILTER}|*.json"/>
-		<assets path="assets/videos"/>
-	</section>
+	<define name="FLX_DEFAULT_SOUND_EXT" value="ogg"/>
+	<define name="FLX_DEFAULT_SOUND_EXT" value="mp3" if="web"/>
 
-	<!-- TODO: What if I want to create an asset library? -->
+	<!-- _____________________ Paths settings _____________________ -->
 
-	<assets path="assets/fonts" embed="true"/>
+	<assets path="assets/data"/>
 
-	<assets path="alsoftrc.ini" rename="plugins/alsoftrc.ini"/>
+	<assets path="assets/fonts" include="*.otf|*.ttf" embed="true"/>
 
-	<!-- _______________________________ Libraries ______________________________ -->
+	<assets path="assets/images" include="*.png|*.txt|*.xml|*.json"/>
 
-	<!-- Native backend -->
+	<assets path="assets/music" include="*.${FLX_DEFAULT_SOUND_EXT}"/>
+
+	<assets path="assets/songs" include="*.${FLX_DEFAULT_SOUND_EXT}|*.json"/>
+	<assets path="assets/songs" include="*format.txt" if="windows"/>
+
+	<assets path="assets/sounds" include="*.${FLX_DEFAULT_SOUND_EXT}"/>
+
+	<assets path="assets/videos" include="*.mp4" if="FEATURE_VIDEOS"/>
+
+	<!-- __________________ Pooping with haxelibs _________________ -->
+
 	<haxelib name="lime"/>
 	<haxelib name="openfl"/>
-
-	<!-- Flixel framework and its add-ons -->
 	<haxelib name="flixel"/>
 	<haxelib name="flixel-addons"/>
-	<haxelib name="flxanimate"/>
-	<haxelib name="flixel-controls"/>
+	<haxelib name="flixel-animate"/>
 
-	<!-- Version handling -->
-	<haxelib name="thx.core"/>
-	<haxelib name="thx.semver"/>
+	<haxelib name="parallaxlt"/>
 
-	<!-- Compile-time utilities -->
-	<haxelib name="compiletime"/>
+	<haxelib name="hscript-improved"/>
+	<haxedef name="hscript"/>
+	<haxedef name="hscriptPos"/>
 
-	<!-- JSON (un)serialization -->
-	<haxelib name="hxjsonast"/>
-	<haxelib name="json2object"/>
+	<haxelib name="moonchart"/>
 
-	<!-- Video playback -->
-	<haxelib name="hxvlc" if="CAN_PLAY_VIDEOS cpp"/>
+	<!-- __________________ Super iconic fuckings _________________ -->
 
-	<!-- OpenFL tweening -->
-	<haxelib name="actuate"/>
+	<icon path="projectFiles/icons/iconOG.png"/>
+	<icon path="projectFiles/icons/icon16.png" size="16"/>
 
-	<!-- ______________________________ Haxedefines _____________________________ -->
+	<!-- __________________ Ultra mega macro shit _________________ -->
 
-	<setenv name="HAXEPATH" value="./"/>
-
-	<!-- Optimise inputs, be careful you will get null errors if you don't use conditionals in your game -->
-	<section if="mobile">
-		<haxedef name="FLX_NO_MOUSE"/>
-		<haxedef name="FLX_NO_KEYBOARD"/>
-	</section>
-	<haxedef name="FLX_NO_TOUCH" if="desktop"/>
-
-	<!-- Disable the Flixel core focus lost screen -->
-	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
-
-	<!-- Disable the Flixel core debugger -->
-	<haxedef name="FLX_NO_DEBUG"/>
-
-	<haxedef name="FLX_DEFAULT_SOUND_EXT" value="ogg"/>
-	<haxedef name="FLX_DEFAULT_SOUND_EXT" value="mp3" if="web"/>
-
-	<haxedef name="FLX_CUSTOM_ASSETS_DIRECTORY" value="assets" if="REDIRECT_ASSETS"/>
-
-	<!-- _________________________________ Custom _______________________________ -->
-
-	<!-- Place custom nodes like icons here (higher priority to override the HaxeFlixel icon) -->
-	<icon path="art/icons/iconOG.png"/>
-	<icon path="art/icons/icon16.png" size="16"/>
-
-	<haxeflag name="--macro" value="addMetadata('@:build(funkin.sound.HxVlcVolumeMacro.rebuildVolumeChangeMethod())', 'hxvlc.flixel.FlxInternalVideo')"/>
+	<haxeflag name="--macro" value="macros.FlxSpriteMacro.add()"/>
+	<haxeflag name="--macro" value="macros.AssetFrontEndMacro.add()"/>
 
 </project>

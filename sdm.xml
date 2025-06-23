@@ -1,0 +1,15 @@
+<!DOCTYPE sdm-config>
+<config>
+	<dependency version="8.1.3" type="haxelib" name="lime"/>
+	<dependency version="9.4.1" type="haxelib" skip-sub-deps="true" name="openfl"/>
+	<dependency version="6.1.0" type="haxelib" skip-sub-deps="true" name="flixel"/>
+	<dependency version="3.3.2" type="haxelib" skip-sub-deps="true" name="flixel-addons"/>
+	<dependency url="https://github.com/MaybeMaru/flixel-animate.git" type="git" skip-sub-deps="true" name="flixel-animate"/>
+	<dependency url="https://github.com/Itz-Miles/parallaxLT.git" type="git" name="parallaxlt"/>
+	<dependency url="https://github.com/Redar13/hscript-improved.git" type="git" name="hscript-improved"/>
+	<dependency url="https://github.com/MaybeMaru/moonchart.git" type="git" name="moonchart"/>
+	<profile name="cpp">
+		<dependency url="https://github.com/HaxeFoundation/hxcpp.git" type="git" name="hxcpp"/>
+		<dependency type="haxelib" name="hxcpp-debug-server"/>
+	</profile>
+</config>

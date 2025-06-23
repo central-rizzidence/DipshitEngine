@@ -1,34 +1,23 @@
 {
-	// Enable formatting on save for the following formats
 	"[haxe][json]": {
 		"editor.formatOnSave": true
 	},
-
-	// Define a formatter for each language
 	"[haxe]": {
 		"editor.defaultFormatter": "nadako.vshaxe"
 	},
 	"[json]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-
-	// Fuck soft tabs
 	"editor.insertSpaces": false,
-
-	// End-of-line stuff
 	"files.trimFinalNewlines": true,
 	"files.trimTrailingWhitespace": true,
 	"files.eol": "\n",
 
-	"files.associations": {
-		"*.hxc": "haxe"
-	},
-
-	// Exclude unwanted paths from the search
 	"search.exclude": {
 		"**/.haxelib": true,
 		"**/export": true
 	},
 
-	"haxe.enableCompilationServer": false
+	"haxe.enableCompilationServer": false,
+	"lime.defaultTargetConfiguration": "Windows / Debug"
 }
