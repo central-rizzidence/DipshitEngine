@@ -19,5 +19,12 @@
 	},
 
 	"haxe.enableCompilationServer": false,
-	"lime.defaultTargetConfiguration": "Windows / Debug"
+	"lime.defaultTargetConfiguration": "Windows / Debug",
+
+	"lime.buildTypes": [
+		{
+			"args": ["-debug", "-DINVERTED_SUSTAIN_DRAW"],
+			"label": "Debug / Inverted sustain draw"
+		}
+	]
 }

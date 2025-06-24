@@ -1,6 +1,7 @@
 package funkin.game;
 
-import funkin.game.notes.SustainTrail;
+import flixel.math.FlxMath;
+import funkin.game.notes.Sustain;
 import flixel.FlxSprite;
 import flixel.sound.FlxSound;
 import funkin.game.notes.Strumline;
@@ -18,8 +19,7 @@ class PlayState extends MusicBeatState {
 
 	public function new(song:Song) {
 		currentSong = song;
-		// super(currentSong != null ? new Conductor(currentSong.getBPMChanges()) : null);
-		super();
+		super(currentSong != null ? new Conductor(currentSong.getBPMChanges()) : null);
 	}
 
 	override function create() {
@@ -38,26 +38,29 @@ class PlayState extends MusicBeatState {
 		}
 		vocals = currentSong.buildVocals();
 
+		conductor.playingMusic = instrumental;
+
 		final sounds = [instrumental].concat(vocals);
 		for (sound in sounds)
 			sound.play();
-
-		var spr = new FlxSprite(0, FlxG.height * 0.1).makeGraphic(FlxG.width, 500, 0xff78ffa5);
-		add(spr);
-
-		var note = new SustainTrail();
-		note.x = 200;
-		note.y = FlxG.height * 0.1;
-		note.alpha = 0.6;
-		// note.angle = -35;
-		note.updateClipping(0, 1);
-		add(note);
 	}
 
 	public function createStrumline(player:Int) {
-		final strumline = new Strumline();
+		final strumline = new Strumline(conductor);
 		strumline.createStrums(FlxG.width * (0.25 + 0.5 * player), 106);
+		strumline.createNotes(currentSong.getNotes().filter(data -> FlxMath.inBounds(data.lane, player * 4, player * 4 + Strumline.KEY_COUNT - 1)));
+		strumline.forEach(strum -> strum.noteSpeed = currentSong.getNoteSpeed());
+		strumline.cpuControlled = player != 1;
 		strumlines.insert(player, strumline);
+	}
+
+	override function update(elapsed:Float) {
+		if (instrumental.playing) {
+			conductor.updateMusic();
+			strumlines.forEach(strumline -> strumline.updateNotes());
+		}
+
+		super.update(elapsed);
 	}
 
 	override function destroy() {

@@ -11,14 +11,18 @@ class InitState extends FlxState {
 		FlxG.fixedTimestep = false;
 		FlxG.mouse.useSystemCursor = true;
 
-		FlxSprite.defaultAntialiasing = Preferences.globalAntialiasing;
+		Preferences.globalAntialiasing = Preferences.globalAntialiasing;
 		FlxAssets.FONT_DEFAULT = Paths.font('vcr');
+
+		Preferences.frameRate = 1000;
 
 		Moonchart.DEFAULT_DIFF = 'normal';
 
 		Controls.initSignals();
 
-		final song = new funkin.game.Song('stalker-a-idol-miku-mix', 'normal');
-		FlxG.switchState(() -> new funkin.game.PlayState(song));
+		// final song = new funkin.game.Song('stalker-a-idol-miku-mix', 'hard');
+		// FlxG.switchState(() -> new funkin.game.PlayState(song));
+
+		FlxG.switchState(() -> new funkin.game.SustainTestState());
 	}
 }

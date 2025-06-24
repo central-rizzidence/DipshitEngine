@@ -117,7 +117,11 @@ class Song {
 	}
 
 	public function getNotes():Array<BasicNote> {
-		return _chart.diffs[difficulty].copy();
+		return _chart.diffs[Moonchart.DEFAULT_DIFF].copy();
+	}
+
+	public function getNoteSpeed():Float {
+		return _meta.scrollSpeeds[Moonchart.DEFAULT_DIFF];
 	}
 
 	public function getEvents():Array<BasicEvent> {

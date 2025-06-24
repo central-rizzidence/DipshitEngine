@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.sound.FlxSound;
 import flixel.util.FlxSort;
 import moonchart.formats.BasicFormat.BasicBPMChange;
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -8,10 +9,14 @@ class Conductor implements IFlxDestroyable {
 	public static var current(default, null):Null<Conductor>;
 
 	public static function setCurrent(inst:Null<Conductor>) {
-		if (inst != null)
-			current = inst;
+		if (inst == null || current == inst)
+			return;
+
+		current = inst;
 		FlxG.log.notice('New conductor assigned to current');
 	}
+
+	public var playingMusic:FlxSound;
 
 	public var currentTime(default, null):Float = -1;
 	public var currentStep(default, null):Float = -1;
@@ -51,6 +56,14 @@ class Conductor implements IFlxDestroyable {
 		_bpmChanges = null;
 	}
 
+	@:access(flixel.sound.FlxSound._channel)
+	public function updateMusic() {
+		if (playingMusic == null)
+			return;
+
+		updateTime(playingMusic._channel?.position ?? playingMusic.time);
+	}
+
 	public function updateTime(timeMs:Float) {
 		currentTime = timeMs;
 
@@ -64,8 +77,8 @@ class Conductor implements IFlxDestroyable {
 
 		for (bpmChange in _bpmChanges) {
 			if (lastBPMChange != null)
-				currentBeat += (bpmChange.time - lastBPMChange.time) / _getCrochet(lastBPMChange);
-			currentBeat += (currentTime - bpmChange.time) / _getCrochet(bpmChange);
+				currentBeat += (bpmChange.time - lastBPMChange.time) / getCrochet(lastBPMChange);
+			currentBeat += (currentTime - bpmChange.time) / getCrochet(bpmChange);
 
 			lastBPMChange = bpmChange;
 		}
@@ -90,7 +103,15 @@ class Conductor implements IFlxDestroyable {
 				measureHit.dispatch(i + 1);
 	}
 
-	private static function _getCrochet(bpmChange:BasicBPMChange):Float {
+	public function getBPMChangeAt(timeMs:Float):Null<BasicBPMChange> {
+		final matches = _bpmChanges.filter(bpmChange -> bpmChange.time <= timeMs);
+		if (matches.length == 0)
+			return null;
+
+		return Reflect.copy(matches[matches.length - 1]);
+	}
+
+	public static function getCrochet(bpmChange:BasicBPMChange):Float {
 		return 60 / bpmChange.bpm * 1000;
 	}
 }

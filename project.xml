@@ -6,8 +6,6 @@
 	<meta title="Friday Night Funkin' - Dipshit Engine" packageName="io.sadsoda.funkin" company="sadsoda" version="0.0.1"/>
 	<app file="DipshitEngine"/>
 
-	<define name="FEATURE_VIDEOS"/>
-
 	<!-- _____________________ Internal stuff _____________________ -->
 
 	<app preloader="flixel.system.FlxPreloader"/>
