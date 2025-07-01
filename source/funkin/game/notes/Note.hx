@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 
 class Note extends FlxSprite {
 	public static inline var HIT_WINDOW_MS:Float = 160;
+	public static inline var SPAWN_TIME:Float = 2000;
 
 	public var strumTime(get, never):Float;
 	public var noteType(get, never):String;
@@ -36,6 +37,10 @@ class Note extends FlxSprite {
 
 	public function canBeHit(songTime:Float):Bool {
 		return Math.abs(strumTime - songTime) <= HIT_WINDOW_MS * hitWindowScale;
+	}
+
+	public function shouldBeSpawn(songTime:Float):Bool {
+		return strumTime - songTime <= SPAWN_TIME / parentStrumline.scrollSpeed;
 	}
 
 	private function get_strumTime():Float {

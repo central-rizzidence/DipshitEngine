@@ -120,7 +120,7 @@ class Song {
 		return _chart.diffs[Moonchart.DEFAULT_DIFF].copy();
 	}
 
-	public function getNoteSpeed():Float {
+	public function getScrollSpeed():Float {
 		return _meta.scrollSpeeds[Moonchart.DEFAULT_DIFF];
 	}
 

@@ -9,7 +9,8 @@ final class Preferences {
 		NOTE_LEFT => [A, LEFT],
 		NOTE_DOWN => [S, DOWN],
 		NOTE_UP => [W, UP],
-		NOTE_RIGHT => [D, RIGHT]
+		NOTE_RIGHT => [D, RIGHT],
+		DEBUG_SKIP => [THREE]
 	];
 
 	public static var globalAntialiasing(default, set):Bool = true;

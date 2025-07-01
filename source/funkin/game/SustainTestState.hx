@@ -9,6 +9,7 @@ import funkin.transition.MusicBeatState;
 class SustainTestState extends MusicBeatState {
 	var sus:Sustain;
 	var tm:Float = 0;
+	var spd:Float = 1;
 
 	override function create() {
 		super.create();
@@ -19,11 +20,11 @@ class SustainTestState extends MusicBeatState {
 		var note = new Note({
 			lane: 2,
 			time: 0,
-			length: 500 / Strumline.PIXELS_PER_MS,
+			length: 500 / Strumline.PIXELS_PER_MS / spd,
 			type: ''
 		});
 
-		sus = new Sustain(note);
+		sus = new Sustain(note, spd);
 		sus.y = FlxG.height * 0.1;
 		sus.loadGraphic(Paths.image('game/noteSkins/default/NOTE_hold_assets'), true, 52, 87);
 		sus.scale.scale(0.7);
@@ -38,7 +39,7 @@ class SustainTestState extends MusicBeatState {
 		if (FlxG.keys.pressed.DOWN)
 			tm += elapsed * 1000;
 
-		sus.updateClipping(tm);
+		sus.updateClipping(tm, spd);
 
 		super.update(elapsed);
 	}

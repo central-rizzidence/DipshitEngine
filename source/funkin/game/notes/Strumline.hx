@@ -15,24 +15,22 @@ class Strumline extends FlxTypedGroup<Strum> {
 
 	public var strumFactory:(lane:Int) -> Strum = defaultStrumFactory;
 	public var noteFactory:(data:BasicNote) -> Note = defaultNoteFactory;
-	public var sustainFactory:(note:Note) -> Sustain = defaultSustainFactory;
+	public var sustainFactory:(note:Note, speed:Float) -> Sustain = defaultSustainFactory;
 
 	public var sustains:FlxTypedGroup<Sustain>;
 	public var notes:NoteGroup;
 
-	public var cpuControlled:Bool = false;
+	public var scrollSpeed(default, set):Float = 1;
 
-	public var conductor:Conductor;
+	public var cpuControlled:Bool = false;
 
 	private var _heldKeys:Vector<Bool> = new Vector<Bool>(KEY_COUNT, false);
 
-	public function new(conductor:Conductor) {
+	public function new() {
 		super(KEY_COUNT);
 
 		sustains = new FlxTypedGroup<Sustain>();
 		notes = new NoteGroup();
-
-		this.conductor = conductor;
 
 		Controls.pressed.add(_onPressed);
 		Controls.released.add(_onReleased);
@@ -61,10 +59,12 @@ class Strumline extends FlxTypedGroup<Strum> {
 			final note = noteFactory(data);
 			note.parentStrumline = this;
 			notes.members[i] = note;
+			note.kill();
 
 			if (data.length > 0) {
-				note.sustain = sustainFactory(note);
+				note.sustain = sustainFactory(note, scrollSpeed);
 				sustains.add(note.sustain);
+				note.sustain.kill();
 			}
 		}
 	}
@@ -73,55 +73,53 @@ class Strumline extends FlxTypedGroup<Strum> {
 		if (cpuControlled)
 			_updateCPUControl();
 
-		notes.forEach(note -> if (note.alive || note.sustain?.alive) updateNote(note));
+		notes.forEach(note -> {
+			if (!note.hasBeenHit && !note.handledMiss && !note.alive && note.shouldBeSpawn(Conductor.current?.currentTime)) {
+				note.revive();
+				note.sustain?.revive();
+			}
+
+			if (note.alive || note.sustain?.alive)
+				updateNote(note);
+		});
 		sustains.forEachAlive(sustain -> updateSustain(sustain));
 	}
 
 	public function updateNote(note:Note) {
 		final noteStrum = members[note.noteLane % KEY_COUNT];
 
-		note.distance = -PIXELS_PER_MS * (conductor.currentTime - note.strumTime) * noteStrum.noteSpeed;
+		note.distance = -PIXELS_PER_MS * (Conductor.current?.currentTime - note.strumTime) * scrollSpeed;
 
-		note.x = noteStrum.x + note.distance * noteStrum._noteCosDirection;
-		note.y = noteStrum.y + note.distance * noteStrum._noteSinDirection;
+		note.x = noteStrum.x;
+		note.y = noteStrum.y + note.distance;
 	}
 
 	public function updateSustain(sustain:Sustain) {
-		sustain.updateHeight();
-
 		if (sustain.parentNote.hasBeenHit) {
 			if ((cpuControlled || _heldKeys[sustain.parentNote.noteLane % KEY_COUNT])
-				&& FlxMath.inBounds(sustain.parentNote.strumTime, conductor.currentTime, conductor.currentTime + sustain.parentNote.sustainLength)) {
+				&& FlxMath.inBounds(Conductor.current?.currentTime, sustain.parentNote.strumTime,
+					sustain.parentNote.strumTime + sustain.parentNote.sustainLength)) {
 				_holdSustain(sustain);
 			} else
 				_releaseSustain(sustain);
-
-			if (!sustain.handledRelease && sustain.parentNote.strumTime <= conductor.currentTime)
-				sustain.updateClipping(conductor.currentTime);
 		}
 
-		if (sustain.clipHeight == 0)
-			sustain.kill();
+		// if (Conductor.current?.currentTime >= sustain.parentNote.strumTime + sustain.parentNote.sustainLength)
+		// 	sustain.kill();
 
 		sustain.x = sustain.parentNote.x + (sustain.parentNote.width - sustain.width) * 0.5;
 		sustain.y = sustain.parentNote.y + sustain.parentNote.height * 0.5;
 	}
 
 	override function update(elapsed:Float) {
-		if (Preferences.receptorsOverlap)
-			sustains.update(elapsed);
-
 		super.update(elapsed);
-
-		if (!Preferences.receptorsOverlap)
-			sustains.update(elapsed);
-
 		notes.update(elapsed);
+		sustains.update(elapsed);
 	}
 
 	private function _updateCPUControl() {
 		notes.forEachAlive(note -> {
-			if (note.strumTime <= conductor.currentTime)
+			if (note.strumTime <= Conductor.current?.currentTime)
 				_hitNote(note);
 		});
 	}
@@ -145,6 +143,8 @@ class Strumline extends FlxTypedGroup<Strum> {
 			if (cpuControlled)
 				noteStrum.confirmTimer = 0.15;
 		}
+
+		sustain.updateClipping(Conductor.current?.currentTime, scrollSpeed);
 	}
 
 	private function _missNote(note:Note) {
@@ -235,6 +235,12 @@ class Strumline extends FlxTypedGroup<Strum> {
 		}
 	}
 
+	@:noCompletion
+	private function set_scrollSpeed(v:Float):Float {
+		sustains.forEachAlive(sustain -> sustain.updateHeight(v));
+		return scrollSpeed = v;
+	}
+
 	public static function defaultStrumFactory(lane:Int):Strum {
 		final strum = new Strum();
 		strum.frames = Paths.getSparrowAtlas('game/noteSkins/default/noteStrumline');
@@ -243,7 +249,7 @@ class Strumline extends FlxTypedGroup<Strum> {
 		strum.animation.addByPrefix('static', 'static$suffix', 24);
 		strum.animation.addByPrefix('pressed', 'press$suffix', 24, false);
 		strum.animation.addByPrefix('confirm', 'confirm$suffix', 24, false);
-		strum.animation.addByPrefix('confirm-hold', 'confirmHold$suffix', 24, false);
+		strum.animation.addByPrefix('confirm-hold', 'confirmHold$suffix', 24);
 
 		strum.scale.scale(0.7);
 		strum.updateHitbox();
@@ -265,8 +271,8 @@ class Strumline extends FlxTypedGroup<Strum> {
 		return note;
 	}
 
-	public static function defaultSustainFactory(note:Note):Sustain {
-		final sustain = new Sustain(note);
+	public static function defaultSustainFactory(note:Note, speed:Float):Sustain {
+		final sustain = new Sustain(note, speed);
 
 		sustain.loadGraphic(Paths.image('game/noteSkins/default/NOTE_hold_assets'), true, 52, 87);
 		sustain.scale.scale(0.7);

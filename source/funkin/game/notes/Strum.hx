@@ -7,15 +7,7 @@ class Strum extends FlxSprite {
 
 	public var forceActive:Bool = false;
 
-	public var noteDirection(default, set):Float = 90;
-	public var noteSpeed:Float = 1;
-
 	public var confirmTimer:Float = 0;
-
-	@:allow(funkin.game.notes.Strumline)
-	private var _noteSinDirection:Float = 1;
-	@:allow(funkin.game.notes.Strumline)
-	private var _noteCosDirection:Float = 0;
 
 	override function update(elapsed:Float) {
 		if (confirmTimer > 0) {
@@ -54,21 +46,11 @@ class Strum extends FlxSprite {
 	}
 
 	public function holdConfirm() {
-		if (animation.name == 'confirm' && !animation.finished)
-			return;
-
 		active = forceActive || isAnimationDynamic('confirm-hold');
 		playAnimation('confirm-hold');
 	}
 
 	public function isAnimationDynamic(name:String):Bool {
 		return animation.exists(name) && animation.getByName(name).numFrames > 1 && animation.getByName(name).frameRate > 0;
-	}
-
-	@:noCompletion
-	private function set_noteDirection(v:Float):Float {
-		_noteSinDirection = Math.sin(v);
-		_noteCosDirection = Math.cos(v);
-		return noteDirection = v;
 	}
 }

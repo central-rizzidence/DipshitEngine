@@ -1,5 +1,6 @@
 package funkin;
 
+import animate.FlxAnimateFrames;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.system.frontEnds.AssetFrontEnd.FlxAssetType;
 
@@ -16,8 +17,30 @@ class Paths {
 		return 'assets/images/$key.png';
 	}
 
-	public static inline function getSparrowAtlas(key:String):FlxAtlasFrames {
+	public static inline function getSparrowAtlas(key:String):Null<FlxAtlasFrames> {
 		return FlxAtlasFrames.fromSparrow(image(key), 'assets/images/$key.xml');
+	}
+
+	public static inline function getAtlas(key:String, allowAnimate:Bool = true):Null<FlxAtlasFrames> {
+		if (allowAnimate) {
+			var path = 'assets/images/$key';
+			if (FlxG.assets.exists('$path/Animation.json', TEXT))
+				return FlxAnimateFrames.fromAnimate(path);
+		}
+
+		var desc = 'assets/images/$key.txt';
+		if (FlxG.assets.exists(desc, TEXT))
+			return FlxAtlasFrames.fromSpriteSheetPacker(image(key), desc);
+
+		desc = 'assets/images/$key.json';
+		if (FlxG.assets.exists(desc, TEXT))
+			return FlxAtlasFrames.fromTexturePackerJson(image(key), desc);
+
+		desc = 'assets/images/$key.xml';
+		if (FlxG.assets.exists(desc, TEXT))
+			return FlxAtlasFrames.fromSparrow(image(key), desc);
+
+		return null;
 	}
 
 	public static inline function music(key:String):String {

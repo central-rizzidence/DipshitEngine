@@ -5,4 +5,6 @@ enum Action {
 	NOTE_DOWN;
 	NOTE_UP;
 	NOTE_RIGHT;
+
+	DEBUG_SKIP;
 }

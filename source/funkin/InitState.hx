@@ -20,9 +20,9 @@ class InitState extends FlxState {
 
 		Controls.initSignals();
 
-		// final song = new funkin.game.Song('stalker-a-idol-miku-mix', 'hard');
-		// FlxG.switchState(() -> new funkin.game.PlayState(song));
+		final song = new funkin.game.Song('stalker-a-idol-miku-mix', 'hard');
+		FlxG.switchState(() -> new funkin.game.PlayState(song));
 
-		FlxG.switchState(() -> new funkin.game.SustainTestState());
+		// FlxG.switchState(() -> new funkin.game.SustainTestState());
 	}
 }
